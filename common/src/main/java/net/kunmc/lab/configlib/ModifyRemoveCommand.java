@@ -63,8 +63,7 @@ class ModifyRemoveCommand extends Command {
                         ctx.sendSuccess(descriptions.describe(ctx,
                                                               ConfigCommandDescriptions.Key.COLLECTION_REMOVE_SUCCESS,
                                                               schemaEntry.entryName(),
-                                                              value.elementToString(removeValue.iterator()
-                                                                                               .next())));
+                                                              value.elementsToString(removeValue)));
                     }
                 });
             }).description(ConfigCommandDescriptions.remove(descriptions, schemaEntry.entryName()));

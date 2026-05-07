@@ -24,20 +24,6 @@ public class UUIDSetValue extends SetValue<UUID, UUIDSetValue> {
 
     public UUIDSetValue(Set<UUID> value) {
         super(value);
-        successMessageForAdd((param) -> {
-            if (param.added()
-                     .size() == 1) {
-                UUID uuid = param.added()
-                                 .toArray(new UUID[0])[0];
-                return param.entryName() + "に" + elementToString(uuid) + "を追加しました.";
-            }
-            return param.entryName() + "に" + param.added()
-                                                   .size() + "個のUUIDを追加しました.";
-        });
-        successMessageForRemove((param) -> {
-            return param.entryName() + "から" + elementToString(param.removed()
-                                                                     .toArray(new UUID[0])[0]) + "を削除しました.";
-        });
     }
 
     @Override

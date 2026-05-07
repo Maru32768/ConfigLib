@@ -64,8 +64,7 @@ class ModifyAddCommand extends Command {
                         ctx.sendSuccess(descriptions.describe(ctx,
                                                               ConfigCommandDescriptions.Key.COLLECTION_ADD_SUCCESS,
                                                               schemaEntry.entryName(),
-                                                              value.elementToString(newValue.iterator()
-                                                                                            .next())));
+                                                              value.elementsToString(newValue)));
                     }
                 });
             }).description(ConfigCommandDescriptions.add(descriptions, schemaEntry.entryName()));

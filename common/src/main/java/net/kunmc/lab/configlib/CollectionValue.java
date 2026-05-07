@@ -93,6 +93,17 @@ public abstract class CollectionValue<T extends Collection<E>, E, U extends Coll
 
     protected abstract String elementToString(E e);
 
+    final String elementsToString(Collection<E> elements) {
+        if (elements.size() == 1) {
+            return elementToString(elements.iterator()
+                                           .next());
+        }
+
+        return "[" + elements.stream()
+                             .map(this::elementToString)
+                             .collect(Collectors.joining(", ")) + "]";
+    }
+
     @Override
     protected String defaultDisplayString(@Nullable T t) {
         if (t == null) {
