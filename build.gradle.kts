@@ -39,6 +39,14 @@ subprojects {
                     artifactId = project.name
                     version = project.version.toString()
                     from(components["java"])
+                    pom {
+                        licenses {
+                            license {
+                                name.set("MIT License")
+                                url.set("https://opensource.org/licenses/MIT")
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -881,3 +881,10 @@ It loads the API into context and provides usage conventions tailored to library
 
 [Bukkit](./sample/bukkit/src/main/java/net/kunmc/lab/sampleplugin)  
 [Forge](./sample/forge/src/main/java/net/kunmc/lab/samplemod)
+
+## License
+
+ConfigLib is licensed under the MIT License.
+
+Spigot, Paper, Bukkit, Minecraft, Brigadier, Forge, and other platform APIs or runtimes are separate projects and may
+be governed by their own license terms. They are not bundled with ConfigLib unless explicitly stated otherwise.
