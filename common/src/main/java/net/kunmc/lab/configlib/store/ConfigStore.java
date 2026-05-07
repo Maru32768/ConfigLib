@@ -7,7 +7,6 @@ import java.io.Closeable;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
-import java.util.Timer;
 
 public interface ConfigStore {
     UnknownKeyPolicy unknownKeyPolicy();
@@ -37,7 +36,7 @@ public interface ConfigStore {
      * The returned {@link Closeable} stops watching when closed.
      * {@code onChanged} is called when a change is detected.
      */
-    Closeable startWatching(Timer timer, Runnable onChanged, int periodMs);
+    Closeable startWatching(Runnable onChanged);
 
     /**
      * Save the current config state to history with its origin.

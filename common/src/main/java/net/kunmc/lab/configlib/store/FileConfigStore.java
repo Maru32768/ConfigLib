@@ -400,7 +400,7 @@ public class FileConfigStore implements ConfigStore {
     }
 
     @Override
-    public Closeable startWatching(Timer timer, Runnable onChanged, int periodMs) {
+    public Closeable startWatching(Runnable onChanged) {
         try {
             file.getParentFile()
                 .mkdirs();
@@ -410,37 +410,48 @@ public class FileConfigStore implements ConfigStore {
                                     .toPath()
                                     .register(watchService, ENTRY_MODIFY, ENTRY_CREATE);
 
-            TimerTask task = new TimerTask() {
-                @Override
-                public void run() {
-                    for (WatchEvent<?> e : watchKey.pollEvents()) {
-                        Path changed = file.getParentFile()
-                                           .toPath()
-                                           .resolve((Path) e.context());
-                        if (changed.equals(file.toPath())) {
-                            try {
-                                if (isLastWrittenSnapshotOnDisk()) {
-                                    continue;
+            Thread watcherThread = new Thread(() -> {
+                try {
+                    while (!Thread.currentThread()
+                                  .isInterrupted()) {
+                        WatchKey key = watchService.take();
+                        for (WatchEvent<?> e : key.pollEvents()) {
+                            Path changed = file.getParentFile()
+                                               .toPath()
+                                               .resolve((Path) e.context());
+                            if (changed.equals(file.toPath())) {
+                                try {
+                                    if (isLastWrittenSnapshotOnDisk()) {
+                                        continue;
+                                    }
+                                    onChanged.run();
+                                } catch (Exception ex) {
+                                    exceptionHandler.accept(ex);
                                 }
-                                onChanged.run();
-                            } catch (Exception ex) {
-                                exceptionHandler.accept(ex);
                             }
                         }
+                        if (!key.reset()) {
+                            break;
+                        }
                     }
-                    watchKey.reset();
+                } catch (ClosedWatchServiceException ignored) {
+                    // Closed by the watcher Closeable.
+                } catch (InterruptedException e) {
+                    Thread.currentThread()
+                          .interrupt();
                 }
-            };
-            timer.scheduleAtFixedRate(task, 0, periodMs);
+            }, "ConfigLib file watcher - " + file.getName());
+            watcherThread.setDaemon(true);
+            watcherThread.start();
 
             return () -> {
-                task.cancel();
                 watchKey.cancel();
                 try {
                     watchService.close();
                 } catch (IOException e) {
                     throw new UncheckedIOException(e);
                 }
+                watcherThread.interrupt();
             };
         } catch (IOException e) {
             throw new UncheckedIOException(e);

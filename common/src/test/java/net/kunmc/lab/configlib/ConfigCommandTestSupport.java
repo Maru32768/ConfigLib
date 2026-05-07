@@ -39,8 +39,7 @@ final class ConfigCommandTestSupport {
     }
 
     static CommonBaseConfig.Option option() {
-        return new CommonBaseConfig.Option().modifyDetectionTimerPeriod(10_000)
-                                            .fileWatchTimerPeriod(10_000);
+        return new CommonBaseConfig.Option().modifyDetectionTimerPeriod(10_000);
     }
 
     static Command commandFor(CommonBaseConfig cfg) {

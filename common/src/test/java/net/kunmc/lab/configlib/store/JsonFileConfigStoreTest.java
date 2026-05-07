@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -16,7 +17,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -362,35 +362,26 @@ class JsonFileConfigStoreTest {
     // ---- startWatching() ----
 
     @Test
-    void startWatchingCanBeClosedWithoutError() throws IOException {
+    void startWatchingCanBeClosedWithoutError() {
         store.write(new SimpleConfig()); // ディレクトリ確保
-        Timer timer = new Timer();
-        try {
-            assertDoesNotThrow(() -> store.startWatching(timer, () -> {
-                                          }, 100)
-                                          .close());
-        } finally {
-            timer.cancel();
-        }
+        assertDoesNotThrow(() -> store.startWatching(() -> {
+                                      })
+                                      .close());
     }
 
     @Test
     void startWatchingCallsCallbackOnFileChange() throws IOException, InterruptedException {
         store.write(new SimpleConfig());
         AtomicBoolean called = new AtomicBoolean(false);
-        Timer timer = new Timer();
 
-        try {
-            store.startWatching(timer, () -> called.set(true), 100);
+        try (Closeable ignored = store.startWatching(() -> called.set(true))) {
 
             // ファイルを変更してウォッチャーが検知するのを待つ
             Thread.sleep(200);
             Files.writeString(configFile.toPath(), "{\"value\":1}", StandardCharsets.UTF_8);
-            Thread.sleep(1000); // WatchTask は 500ms ごとに実行
+            Thread.sleep(1000);
 
             assertTrue(called.get());
-        } finally {
-            timer.cancel();
         }
     }
 

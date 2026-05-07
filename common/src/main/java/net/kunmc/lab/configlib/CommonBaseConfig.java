@@ -112,13 +112,13 @@ public abstract class CommonBaseConfig {
         }
 
         modificationDetector.start(timer, option.modifyDetectionTimerPeriod);
-        configStoreWatcher = configStore.startWatching(timer, () -> {
+        configStoreWatcher = configStore.startWatching(() -> {
             try {
                 loadConfig();
             } catch (ConfigValidationException ex) {
                 logValidationFailure(ex);
             }
-        }, option.fileWatchTimerPeriod);
+        });
     }
 
     public final void onChange(Runnable listener) {
@@ -504,7 +504,6 @@ public abstract class CommonBaseConfig {
 
     public static class Option {
         int modifyDetectionTimerPeriod = 100;
-        int fileWatchTimerPeriod = 100;
         final Migrations.Builder migrations = Migrations.builder();
 
         public Option() {
@@ -513,12 +512,6 @@ public abstract class CommonBaseConfig {
         public Option modifyDetectionTimerPeriod(int period) {
             Preconditions.checkArgument(period > 0);
             this.modifyDetectionTimerPeriod = period;
-            return this;
-        }
-
-        public Option fileWatchTimerPeriod(int period) {
-            Preconditions.checkArgument(period > 0);
-            this.fileWatchTimerPeriod = period;
             return this;
         }
 
