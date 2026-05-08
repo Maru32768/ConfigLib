@@ -9,7 +9,6 @@ import net.kunmc.lab.configlib.store.InMemoryConfigStore;
 import net.kunmc.lab.configlib.value.StringValue;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import static net.kunmc.lab.configlib.ConfigCommandTestSupport.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,8 +45,8 @@ class ConfigAuditCommandTest {
     @Test
     void auditCommandMasksConfiguredValues() {
         MaskedAuditConfig masked = initConfig(new MaskedAuditConfig());
-        FakeSender sender = FakeSender.player("Steve");
-        denyRevealPermission(sender);
+        FakeSender sender = FakeSender.player("Steve")
+                                      .denyPermissions(MaskedRevealPolicy.DEFAULT_REVEAL_PERMISSION);
 
         try (CommandTester tester = new CommandTester(commandFor(masked), "configlib.test")) {
             tester.execute("config secret updated", sender);
@@ -101,8 +100,8 @@ class ConfigAuditCommandTest {
     @Test
     void auditCommandUsesCustomMaskedRevealPolicy() {
         MaskedAuditConfig masked = initConfig(new MaskedAuditConfig());
-        FakeSender sender = FakeSender.player("Steve");
-        denyRevealPermission(sender);
+        FakeSender sender = FakeSender.player("Steve")
+                                      .denyPermissions(MaskedRevealPolicy.DEFAULT_REVEAL_PERMISSION);
 
         try (CommandTester tester = new CommandTester(new ConfigCommandBuilder(masked).maskedRevealPolicy((ctx, config, entry) -> config == masked && entry.entryName()
                                                                                                                                                            .equals("secret"))
@@ -129,9 +128,4 @@ class ConfigAuditCommandTest {
         }
     }
 
-    private static void denyRevealPermission(FakeSender sender) {
-        Mockito.when(sender.asSender()
-                           .hasPermission(Mockito.anyString()))
-               .thenAnswer(invocation -> !MaskedRevealPolicy.DEFAULT_REVEAL_PERMISSION.equals(invocation.getArgument(0)));
-    }
 }

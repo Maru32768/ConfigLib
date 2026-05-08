@@ -1,6 +1,6 @@
 package net.kunmc.lab.configlib.value.map;
 
-import net.kunmc.lab.commandlib.argument.DoubleArgument;
+import net.kunmc.lab.commandlib.argument.CommonDoubleArgument;
 import net.kunmc.lab.configlib.ArgumentDefinition;
 
 import java.util.HashMap;
@@ -19,9 +19,10 @@ public class Enum2DoubleMapValue<T extends Enum<T>> extends Enum2ObjectMapValue<
     @Override
     protected List<PutArgumentDefinition<T, Double>> argumentDefinitionsForPut() {
         return List.of(new PutArgumentDefinition<>(keyArgumentDefinitionForPut(),
-                                                   new ArgumentDefinition<>(new DoubleArgument("double"), (d, ctx) -> {
-                                                       return d;
-                                                   })));
+                                                   new ArgumentDefinition<>(new CommonDoubleArgument("double"),
+                                                                            (d, ctx) -> {
+                                                                                return d;
+                                                                            })));
     }
 
     @Override

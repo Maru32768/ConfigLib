@@ -1,6 +1,6 @@
 package net.kunmc.lab.configlib.exception;
 
-import net.kunmc.lab.commandlib.CommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.configlib.ConfigCommandDescriptions;
 import net.kunmc.lab.configlib.util.ListUtil;
 
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class InvalidValueException extends Exception {
-    private final Consumer<CommandContext> messageSender;
+    private final Consumer<CommonCommandContext<?, ?>> messageSender;
 
     public InvalidValueException() {
         this(ctx -> ctx.sendFailure(ConfigCommandDescriptions.describe(ctx,
@@ -30,16 +30,16 @@ public class InvalidValueException extends Exception {
         this.messageSender = ctx -> messages.forEach(ctx::sendFailure);
     }
 
-    public InvalidValueException(Consumer<CommandContext> messageSender) {
+    public InvalidValueException(Consumer<CommonCommandContext<?, ?>> messageSender) {
         this(messageSender, "Custom validation message");
     }
 
-    public InvalidValueException(Consumer<CommandContext> messageSender, String logMessage) {
+    public InvalidValueException(Consumer<CommonCommandContext<?, ?>> messageSender, String logMessage) {
         super(logMessage);
         this.messageSender = messageSender;
     }
 
-    public void sendMessage(CommandContext ctx) {
+    public void sendMessage(CommonCommandContext<?, ?> ctx) {
         this.messageSender.accept(ctx);
     }
 }

@@ -1,6 +1,6 @@
 package net.kunmc.lab.configlib.value.map;
 
-import net.kunmc.lab.commandlib.argument.FloatArgument;
+import net.kunmc.lab.commandlib.argument.CommonFloatArgument;
 import net.kunmc.lab.configlib.ArgumentDefinition;
 
 import java.util.HashMap;
@@ -19,9 +19,10 @@ public class Enum2FloatMapValue<T extends Enum<T>> extends Enum2ObjectMapValue<T
     @Override
     protected List<PutArgumentDefinition<T, Float>> argumentDefinitionsForPut() {
         return List.of(new PutArgumentDefinition<>(keyArgumentDefinitionForPut(),
-                                                   new ArgumentDefinition<>(new FloatArgument("float"), (f, ctx) -> {
-                                                       return f;
-                                                   })));
+                                                   new ArgumentDefinition<>(new CommonFloatArgument("float"),
+                                                                            (f, ctx) -> {
+                                                                                return f;
+                                                                            })));
     }
 
     @Override

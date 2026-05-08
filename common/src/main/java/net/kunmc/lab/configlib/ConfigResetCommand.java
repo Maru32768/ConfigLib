@@ -1,19 +1,20 @@
 package net.kunmc.lab.configlib;
 
-import net.kunmc.lab.commandlib.Command;
-import net.kunmc.lab.commandlib.CommandContext;
+import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.configlib.exception.ConfigValidationException;
 import net.kunmc.lab.configlib.store.ChangeTrace;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
-class ConfigResetCommand extends Command {
-    public ConfigResetCommand(@NotNull Set<CommonBaseConfig> configs,
-                              ConfigCommandDescriptions.Provider descriptions,
-                              MaskedRevealPolicy maskedRevealPolicy) {
-        super(SubCommandType.Reset.name);
-        description(ConfigCommandDescriptions.reset(descriptions));
+final class ConfigResetCommand {
+    static <C extends CommonCommandContext<?, ?>, T extends CommonCommand<C, T>> T create(CommandFactory<C, T> commandFactory,
+                                                                                          @NotNull Set<CommonBaseConfig> configs,
+                                                                                          ConfigCommandDescriptions.Provider descriptions,
+                                                                                          MaskedRevealPolicy maskedRevealPolicy) {
+        T command = commandFactory.create(SubCommandType.Reset.name);
+        command.description(ConfigCommandDescriptions.reset(descriptions));
 
         if (configs.isEmpty()) {
             throw new IllegalArgumentException("configs is empty");
@@ -21,19 +22,22 @@ class ConfigResetCommand extends Command {
 
 
         if (configs.size() == 1) {
-            execute(ctx -> configs.forEach(config -> exec(ctx, config, descriptions, maskedRevealPolicy)));
+            command.execute(ctx -> configs.forEach(config -> exec(ctx, config, descriptions, maskedRevealPolicy)));
         } else {
-            configs.forEach(config -> addChildren(new Command(config.entryName()) {{
-                description(ConfigCommandDescriptions.resetConfig(descriptions, config.entryName()));
-                execute(ctx -> exec(ctx, config, descriptions, maskedRevealPolicy));
-            }}));
+            configs.forEach(config -> {
+                T child = commandFactory.create(config.entryName());
+                child.description(ConfigCommandDescriptions.resetConfig(descriptions, config.entryName()));
+                child.execute(ctx -> exec(ctx, config, descriptions, maskedRevealPolicy));
+                command.addChildren(child);
+            });
         }
+        return command;
     }
 
-    private void exec(CommandContext ctx,
-                      CommonBaseConfig config,
-                      ConfigCommandDescriptions.Provider descriptions,
-                      MaskedRevealPolicy maskedRevealPolicy) {
+    private static void exec(CommonCommandContext<?, ?> ctx,
+                             CommonBaseConfig config,
+                             ConfigCommandDescriptions.Provider descriptions,
+                             MaskedRevealPolicy maskedRevealPolicy) {
         try {
             config.mutate(() -> {
                 config.schema()

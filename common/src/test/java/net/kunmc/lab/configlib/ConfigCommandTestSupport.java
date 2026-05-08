@@ -1,7 +1,7 @@
 package net.kunmc.lab.configlib;
 
 import com.google.gson.Gson;
-import net.kunmc.lab.commandlib.Command;
+import net.kunmc.lab.commandlib.TestCommand;
 import net.kunmc.lab.commandlib.CommandTester;
 import net.kunmc.lab.commandlib.FakeSender;
 import net.kunmc.lab.configlib.annotation.Range;
@@ -42,16 +42,16 @@ final class ConfigCommandTestSupport {
         return new CommonBaseConfig.Option().modifyDetectionTimerPeriod(10_000);
     }
 
-    static Command commandFor(CommonBaseConfig cfg) {
+    static TestCommand commandFor(CommonBaseConfig cfg) {
         return new ConfigCommandBuilder(cfg).build();
     }
 
-    static Command commandFor(CommonBaseConfig first, CommonBaseConfig second) {
+    static TestCommand commandFor(CommonBaseConfig first, CommonBaseConfig second) {
         return new ConfigCommandBuilder(first).addConfig(second)
                                               .build();
     }
 
-    static void execute(Command command, String input, FakeSender sender) {
+    static void execute(TestCommand command, String input, FakeSender sender) {
         try (CommandTester tester = new CommandTester(command, "configlib.test")) {
             tester.execute(input, sender);
         }

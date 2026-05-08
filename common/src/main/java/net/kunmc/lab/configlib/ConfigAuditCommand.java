@@ -1,8 +1,8 @@
 package net.kunmc.lab.configlib;
 
-import net.kunmc.lab.commandlib.Command;
-import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.IntegerArgument;
+import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.CommonCommandContext;
+import net.kunmc.lab.commandlib.argument.CommonIntegerArgument;
 import net.kunmc.lab.configlib.schema.ConfigSchemaEntry;
 import net.kunmc.lab.configlib.schema.DisplayContext;
 import net.kunmc.lab.configlib.store.AuditChange;
@@ -16,14 +16,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
 
-class ConfigAuditCommand extends Command {
+final class ConfigAuditCommand {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public ConfigAuditCommand(@NotNull Set<CommonBaseConfig> configs,
-                              ConfigCommandDescriptions.Provider descriptions,
-                              MaskedRevealPolicy maskedRevealPolicy) {
-        super(SubCommandType.Audit.name);
-        description(ConfigCommandDescriptions.audit(descriptions));
+    static <C extends CommonCommandContext<?, ?>, T extends CommonCommand<C, T>> T create(CommandFactory<C, T> commandFactory,
+                                                                                          @NotNull Set<CommonBaseConfig> configs,
+                                                                                          ConfigCommandDescriptions.Provider descriptions,
+                                                                                          MaskedRevealPolicy maskedRevealPolicy) {
+        T command = commandFactory.create(SubCommandType.Audit.name);
+        command.description(ConfigCommandDescriptions.audit(descriptions));
 
         if (configs.isEmpty()) {
             throw new IllegalArgumentException("configs is empty");
@@ -32,35 +33,26 @@ class ConfigAuditCommand extends Command {
         if (configs.size() == 1) {
             CommonBaseConfig config = configs.iterator()
                                              .next();
-            execute(ctx -> execList(ctx, config, descriptions));
-            argument(new IntegerArgument("index",
-                                         0,
-                                         Integer.MAX_VALUE)).description(ConfigCommandDescriptions.auditIndex(
-                                                                    descriptions))
-                                                            .execute((index, ctx) -> execDetail(ctx,
-                                                                                                config,
-                                                                                                index,
-                                                                                                descriptions,
-                                                                                                maskedRevealPolicy));
-            return;
+            command.execute(ctx -> execList(ctx, config, descriptions));
+            command.argument(new CommonIntegerArgument<>("index", 0, Integer.MAX_VALUE))
+                   .description(ConfigCommandDescriptions.auditIndex(descriptions))
+                   .execute((index, ctx) -> execDetail(ctx, config, index, descriptions, maskedRevealPolicy));
+            return command;
         }
 
-        configs.forEach(config -> addChildren(new Command(config.entryName()) {{
-            description(ConfigCommandDescriptions.auditConfig(descriptions, config.entryName()));
-            execute(ctx -> execList(ctx, config, descriptions));
-            argument(new IntegerArgument("index",
-                                         0,
-                                         Integer.MAX_VALUE)).description(ConfigCommandDescriptions.auditIndex(
-                                                                    descriptions))
-                                                            .execute((index, ctx) -> execDetail(ctx,
-                                                                                                config,
-                                                                                                index,
-                                                                                                descriptions,
-                                                                                                maskedRevealPolicy));
-        }}));
+        configs.forEach(config -> {
+            T child = commandFactory.create(config.entryName());
+            child.description(ConfigCommandDescriptions.auditConfig(descriptions, config.entryName()));
+            child.execute(ctx -> execList(ctx, config, descriptions));
+            child.argument(new CommonIntegerArgument<>("index", 0, Integer.MAX_VALUE))
+                 .description(ConfigCommandDescriptions.auditIndex(descriptions))
+                 .execute((index, ctx) -> execDetail(ctx, config, index, descriptions, maskedRevealPolicy));
+            command.addChildren(child);
+        });
+        return command;
     }
 
-    private static void execList(CommandContext ctx,
+    private static void execList(CommonCommandContext<?, ?> ctx,
                                  CommonBaseConfig config,
                                  ConfigCommandDescriptions.Provider descriptions) {
         config.inspect(() -> {
@@ -80,7 +72,7 @@ class ConfigAuditCommand extends Command {
         });
     }
 
-    private static void execDetail(CommandContext ctx,
+    private static void execDetail(CommonCommandContext<?, ?> ctx,
                                    CommonBaseConfig config,
                                    int index,
                                    ConfigCommandDescriptions.Provider descriptions,
@@ -141,7 +133,9 @@ class ConfigAuditCommand extends Command {
         });
     }
 
-    static String summary(CommandContext ctx, ConfigCommandDescriptions.Provider descriptions, AuditEntry entry) {
+    static String summary(CommonCommandContext<?, ?> ctx,
+                          ConfigCommandDescriptions.Provider descriptions,
+                          AuditEntry entry) {
         return dateText(entry) + " " + entry.trace()
                                             .source() + actorSuffix(ctx,
                                                                     descriptions,
@@ -152,7 +146,7 @@ class ConfigAuditCommand extends Command {
         return DATE_FORMAT.format(new Date(entry.timestamp()));
     }
 
-    private static String actorSuffix(CommandContext ctx,
+    private static String actorSuffix(CommonCommandContext<?, ?> ctx,
                                       ConfigCommandDescriptions.Provider descriptions,
                                       AuditEntry entry) {
         if (!entry.trace()
@@ -199,7 +193,7 @@ class ConfigAuditCommand extends Command {
     }
 
     static String displayChangeValue(CommonBaseConfig config,
-                                     CommandContext ctx,
+                                     CommonCommandContext<?, ?> ctx,
                                      String path,
                                      String rawText,
                                      MaskedRevealPolicy maskedRevealPolicy) {

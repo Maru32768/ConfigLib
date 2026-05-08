@@ -1,8 +1,8 @@
 package net.kunmc.lab.configlib;
 
-import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.CommandTester;
 import net.kunmc.lab.commandlib.FakeSender;
+import net.kunmc.lab.commandlib.TestCommand;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -60,7 +60,7 @@ class ConfigFieldCommandTest {
     void plainFieldsGenerateGetOnlyCommands() {
         PlainFieldConfig cfg = initConfig(new PlainFieldConfig());
         FakeSender sender = FakeSender.console();
-        Command command = commandFor(cfg);
+        TestCommand command = commandFor(cfg);
 
         try (CommandTester tester = new CommandTester(command, "configlib.test")) {
             tester.execute("config label", sender);
@@ -76,8 +76,8 @@ class ConfigFieldCommandTest {
     void plainFieldsAreNotGeneratedWhenGetIsDisabled() {
         PlainFieldConfig cfg = initConfig(new PlainFieldConfig());
         FakeSender sender = FakeSender.console();
-        Command command = new ConfigCommandBuilder(cfg).disableGet()
-                                                       .build();
+        TestCommand command = new ConfigCommandBuilder(cfg).disableGet()
+                                                           .build();
 
         try (CommandTester tester = new CommandTester(command, "configlib.test")) {
             assertThrows(RuntimeException.class, () -> tester.execute("config label", sender));
@@ -118,8 +118,8 @@ class ConfigFieldCommandTest {
     void pojoModifyCommandsAreNotGeneratedWhenGetIsDisabledForUnsupportedTypes() {
         PojoModifyConfig cfg = initConfig(new PojoModifyConfig());
         FakeSender sender = FakeSender.console();
-        Command command = new ConfigCommandBuilder(cfg).disableGet()
-                                                       .build();
+        TestCommand command = new ConfigCommandBuilder(cfg).disableGet()
+                                                           .build();
 
         try (CommandTester tester = new CommandTester(command, "configlib.test")) {
             tester.execute("config maxPlayers 45", sender);
@@ -241,8 +241,8 @@ class ConfigFieldCommandTest {
     void getDisabledStillAllowsModifyWhenValueIsModifiable() {
         config = init(new TestConfig());
         FakeSender sender = FakeSender.console();
-        Command command = new ConfigCommandBuilder(config).disableGet()
-                                                          .build();
+        TestCommand command = new ConfigCommandBuilder(config).disableGet()
+                                                              .build();
 
         try (CommandTester tester = new CommandTester(command, "configlib.test")) {
             tester.execute("config count 22", sender);
@@ -257,8 +257,8 @@ class ConfigFieldCommandTest {
     void modifyDisabledStillAllowsGet() {
         config = init(new TestConfig());
         FakeSender sender = FakeSender.console();
-        Command command = new ConfigCommandBuilder(config).disableModify()
-                                                          .build();
+        TestCommand command = new ConfigCommandBuilder(config).disableModify()
+                                                              .build();
 
         try (CommandTester tester = new CommandTester(command, "configlib.test")) {
             tester.execute("config count", sender);

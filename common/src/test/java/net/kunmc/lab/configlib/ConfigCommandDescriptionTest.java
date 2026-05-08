@@ -2,13 +2,10 @@ package net.kunmc.lab.configlib;
 
 import net.kunmc.lab.commandlib.CommandTester;
 import net.kunmc.lab.commandlib.FakeSender;
-import org.bukkit.entity.Player;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.Map;
-import java.util.UUID;
 
 import static net.kunmc.lab.configlib.ConfigCommandTestSupport.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -26,7 +23,8 @@ class ConfigCommandDescriptionTest {
     @Test
     void rootHelpIncludesSubcommandDescriptions() {
         config = init(new TestConfig());
-        FakeSender sender = FakeSender.player("Steve", "en_us");
+        FakeSender sender = FakeSender.player("Steve")
+                                      .locale("en_us");
 
         try (CommandTester tester = new CommandTester(commandFor(config), "configlib.test")) {
             tester.execute("config", sender);
@@ -47,7 +45,8 @@ class ConfigCommandDescriptionTest {
     void historyDiffHelpIncludesArgumentDescriptions() {
         config = init(new TestConfig());
         makeHistory(config);
-        FakeSender sender = FakeSender.player("Steve", "en_us");
+        FakeSender sender = FakeSender.player("Steve")
+                                      .locale("en_us");
 
         try (CommandTester tester = new CommandTester(commandFor(config), "configlib.test")) {
             tester.execute("config history diff", sender);
@@ -69,7 +68,8 @@ class ConfigCommandDescriptionTest {
     @Test
     void fieldHelpIncludesModifyDescriptions() {
         config = init(new TestConfig());
-        FakeSender sender = FakeSender.player("Steve", "en_us");
+        FakeSender sender = FakeSender.player("Steve")
+                                      .locale("en_us");
 
         try (CommandTester tester = new CommandTester(commandFor(config), "configlib.test")) {
             tester.execute("config count set", sender);
@@ -91,9 +91,8 @@ class ConfigCommandDescriptionTest {
     @Test
     void descriptionsUseSenderLanguage() {
         config = init(new TestConfig());
-        FakeSender sender = FakeSender.player("Steve", "ja_jp");
-        Mockito.when(((Player) sender.asSender()).getUniqueId())
-               .thenReturn(UUID.randomUUID());
+        FakeSender sender = FakeSender.player("Steve")
+                                      .locale("ja_jp");
 
         try (CommandTester tester = new CommandTester(commandFor(config), "configlib.test")) {
             tester.execute("config", sender);
@@ -101,12 +100,16 @@ class ConfigCommandDescriptionTest {
         }
 
         assertTrue(messages(sender).stream()
-                                   .anyMatch(x -> x.contains("設定を表示・変更します。")), messages(sender).toString());
-        assertTrue(messages(sender).stream()
-                                   .anyMatch(x -> x.contains("変更監査ログを表示します。")),
+                                   .anyMatch(x -> x.contains(
+                                           "\u8a2d\u5b9a\u3092\u8868\u793a\u30fb\u5909\u66f4\u3057\u307e\u3059\u3002")),
                    messages(sender).toString());
         assertTrue(messages(sender).stream()
-                                   .anyMatch(x -> x.contains("count の値を 25 に変更しました。")),
+                                   .anyMatch(x -> x.contains(
+                                           "\u5909\u66f4\u76e3\u67fb\u30ed\u30b0\u3092\u8868\u793a\u3057\u307e\u3059\u3002")),
+                   messages(sender).toString());
+        assertTrue(messages(sender).stream()
+                                   .anyMatch(x -> x.contains(
+                                           "count \u306e\u5024\u3092 25 \u306b\u5909\u66f4\u3057\u307e\u3057\u305f\u3002")),
                    messages(sender).toString());
     }
 
@@ -136,7 +139,8 @@ class ConfigCommandDescriptionTest {
         ConfigCommandDescriptions.Provider provider = ConfigCommandDescriptions.localized(Map.of("en_us",
                                                                                                  Map.of(ConfigCommandDescriptions.Key.POJO_RANGE,
                                                                                                         "{max} >= {field} >= {min}")));
-        FakeSender sender = FakeSender.player("Steve", "en_us");
+        FakeSender sender = FakeSender.player("Steve")
+                                      .locale("en_us");
 
         try (CommandTester tester = new CommandTester(new ConfigCommandBuilder(config).descriptionProvider((ctx, key, args) -> {
                                                                                           if (key == ConfigCommandDescriptions.Key.ROOT) {
@@ -158,7 +162,8 @@ class ConfigCommandDescriptionTest {
     @Test
     void namedArgumentsAllowNullValues() {
         config = init(new TestConfig());
-        FakeSender sender = FakeSender.player("Steve", "en_us");
+        FakeSender sender = FakeSender.player("Steve")
+                                      .locale("en_us");
 
         try (CommandTester tester = new CommandTester(new ConfigCommandBuilder(config).descriptionProvider((ctx, key, args) -> {
                                                                                           if (key == ConfigCommandDescriptions.Key.ROOT) {
@@ -186,14 +191,16 @@ class ConfigCommandDescriptionTest {
     void defaultValueCommandPrerequisiteMessageUsesSenderLanguage() {
         ExecutableIfConfig cfg = initConfig(new ExecutableIfConfig());
         config = cfg;
-        FakeSender sender = FakeSender.player("Steve", "ja_jp");
+        FakeSender sender = FakeSender.player("Steve")
+                                      .locale("ja_jp");
 
         try (CommandTester tester = new CommandTester(commandFor(cfg), "configlib.test")) {
             tester.execute("config count 25", sender);
         }
 
         assertTrue(messages(sender).stream()
-                                   .anyMatch(x -> x.contains("このコマンドを実行できません。")),
+                                   .anyMatch(x -> x.contains(
+                                           "\u3053\u306e\u30b3\u30de\u30f3\u30c9\u3092\u5b9f\u884c\u3067\u304d\u307e\u305b\u3093\u3002")),
                    messages(sender).toString());
     }
 

@@ -137,8 +137,9 @@ public interface UnknownKeyPolicy {
             String path = prefix.isEmpty() ? key : prefix + "." + key;
             if (!leafPaths.contains(path) && !branchPaths.contains(path)) {
                 if (!target.has(key) && keep.test(path)) {
-                    target.add(key, entry.getValue()
-                                         .deepCopy());
+                    target.add(key,
+                               entry.getValue()
+                                    .deepCopy());
                 }
                 continue;
             }

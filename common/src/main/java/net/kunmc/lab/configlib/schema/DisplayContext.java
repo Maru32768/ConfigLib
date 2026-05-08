@@ -1,6 +1,6 @@
 package net.kunmc.lab.configlib.schema;
 
-import net.kunmc.lab.commandlib.CommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.configlib.CommonBaseConfig;
 import net.kunmc.lab.configlib.MaskedRevealPolicy;
 import org.jetbrains.annotations.Nullable;
@@ -9,12 +9,12 @@ public final class DisplayContext {
     private static final String MASKED_TEXT = "<masked>";
     private static final DisplayContext RAW = new DisplayContext(null, null, MaskedRevealPolicy.DEFAULT);
     @Nullable
-    private final CommandContext commandContext;
+    private final CommonCommandContext<?, ?> commandContext;
     @Nullable
     private final CommonBaseConfig config;
     private final MaskedRevealPolicy maskedRevealPolicy;
 
-    private DisplayContext(@Nullable CommandContext commandContext,
+    private DisplayContext(@Nullable CommonCommandContext<?, ?> commandContext,
                            @Nullable CommonBaseConfig config,
                            MaskedRevealPolicy maskedRevealPolicy) {
         this.commandContext = commandContext;
@@ -26,25 +26,25 @@ public final class DisplayContext {
         return RAW;
     }
 
-    public static DisplayContext command(CommandContext ctx,
+    public static DisplayContext command(CommonCommandContext<?, ?> ctx,
                                          CommonBaseConfig config,
                                          MaskedRevealPolicy maskedRevealPolicy) {
         return new DisplayContext(ctx, config, maskedRevealPolicy);
     }
 
-    public static DisplayContext audit(CommandContext ctx,
+    public static DisplayContext audit(CommonCommandContext<?, ?> ctx,
                                        CommonBaseConfig config,
                                        MaskedRevealPolicy maskedRevealPolicy) {
         return new DisplayContext(ctx, config, maskedRevealPolicy);
     }
 
-    public static DisplayContext diff(CommandContext ctx,
+    public static DisplayContext diff(CommonCommandContext<?, ?> ctx,
                                       CommonBaseConfig config,
                                       MaskedRevealPolicy maskedRevealPolicy) {
         return new DisplayContext(ctx, config, maskedRevealPolicy);
     }
 
-    public static DisplayContext history(CommandContext ctx,
+    public static DisplayContext history(CommonCommandContext<?, ?> ctx,
                                          CommonBaseConfig config,
                                          MaskedRevealPolicy maskedRevealPolicy) {
         return new DisplayContext(ctx, config, maskedRevealPolicy);

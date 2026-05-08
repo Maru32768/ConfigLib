@@ -1,7 +1,7 @@
 package net.kunmc.lab.configlib.value.map;
 
-import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.EnumArgument;
+import net.kunmc.lab.commandlib.CommonCommandContext;
+import net.kunmc.lab.commandlib.argument.CommonEnumArgument;
 import net.kunmc.lab.configlib.ArgumentDefinition;
 
 import java.util.HashMap;
@@ -10,14 +10,14 @@ import java.util.function.BiFunction;
 
 public class Enum2EnumMapValue<K extends Enum<K>, V extends Enum<V>> extends Enum2ObjectMapValue<K, V, Enum2EnumMapValue<K, V>> {
     private final transient Class<V> clazz;
-    private transient BiFunction<V, CommandContext, Boolean> valueFilter = (x, ctx) -> true;
+    private transient BiFunction<V, CommonCommandContext<?, ?>, Boolean> valueFilter = (x, ctx) -> true;
 
     public Enum2EnumMapValue(Class<K> keyClass, Class<V> valueClass) {
         super(keyClass, new HashMap<>());
         this.clazz = valueClass;
     }
 
-    public Enum2EnumMapValue<K, V> filterForValue(BiFunction<V, CommandContext, Boolean> filter) {
+    public Enum2EnumMapValue<K, V> filterForValue(BiFunction<V, CommonCommandContext<?, ?>, Boolean> filter) {
         this.valueFilter = filter;
         return this;
     }
@@ -25,8 +25,8 @@ public class Enum2EnumMapValue<K extends Enum<K>, V extends Enum<V>> extends Enu
     @Override
     protected List<PutArgumentDefinition<K, V>> argumentDefinitionsForPut() {
         return List.of(new PutArgumentDefinition<>(keyArgumentDefinitionForPut(),
-                                                   new ArgumentDefinition<>(new EnumArgument<>("value",
-                                                                                               clazz).validator(
+                                                   new ArgumentDefinition<>(new CommonEnumArgument<>("value",
+                                                                                                     clazz).validator(
                                                            valueFilter), (v, ctx) -> {
                                                        return v;
                                                    })));

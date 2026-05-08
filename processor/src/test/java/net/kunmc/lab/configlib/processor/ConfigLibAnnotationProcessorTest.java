@@ -46,12 +46,7 @@ class ConfigLibAnnotationProcessorTest {
     @Test
     void rangeRejectsValueField() throws IOException {
         CompileResult result = compile("TestConfig",
-                                       "import net.kunmc.lab.configlib.annotation.Range;\n" +
-                                       "import net.kunmc.lab.configlib.value.IntegerValue;\n" +
-                                       "class TestConfig {\n" +
-                                       "  @Range(min = 1, max = 10)\n" +
-                                       "  IntegerValue maxPlayers = new IntegerValue(5);\n" +
-                                       "}\n");
+                                       "import net.kunmc.lab.configlib.annotation.Range;\n" + "import net.kunmc.lab.configlib.value.IntegerValue;\n" + "class TestConfig {\n" + "  @Range(min = 1, max = 10)\n" + "  IntegerValue maxPlayers = new IntegerValue(5);\n" + "}\n");
 
         assertFalse(result.success());
         assertTrue(result.contains("Value fields must use constructor bounds or addValidator(...) instead of @Range."),

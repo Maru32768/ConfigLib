@@ -1,8 +1,8 @@
 package net.kunmc.lab.configlib;
 
-import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.CommandTester;
 import net.kunmc.lab.commandlib.FakeSender;
+import net.kunmc.lab.commandlib.TestCommand;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -59,8 +59,8 @@ class ConfigLevelCommandTest {
         CustomNamedConfig cfg = initConfig(new CustomNamedConfig());
         config = cfg;
         FakeSender sender = FakeSender.console();
-        Command command = new ConfigCommandBuilder(cfg).name("settings")
-                                                       .build();
+        TestCommand command = new ConfigCommandBuilder(cfg).name("settings")
+                                                           .build();
 
         try (CommandTester tester = new CommandTester(command, "configlib.test")) {
             tester.execute("settings primary", sender);
@@ -79,11 +79,11 @@ class ConfigLevelCommandTest {
     void builderCanDisableConfigLevelCommands() {
         config = init(new TestConfig());
         FakeSender sender = FakeSender.console();
-        Command command = new ConfigCommandBuilder(config).disableList()
-                                                          .disableReload()
-                                                          .disableReset()
-                                                          .disableHistory()
-                                                          .build();
+        TestCommand command = new ConfigCommandBuilder(config).disableList()
+                                                              .disableReload()
+                                                              .disableReset()
+                                                              .disableHistory()
+                                                              .build();
 
         try (CommandTester tester = new CommandTester(command, "configlib.test")) {
             assertThrows(RuntimeException.class, () -> tester.execute("config list", sender));
@@ -101,7 +101,7 @@ class ConfigLevelCommandTest {
         config = cfg;
         init(cfg);
         FakeSender sender = FakeSender.console();
-        Command command = commandFor(cfg);
+        TestCommand command = commandFor(cfg);
 
         try (CommandTester tester = new CommandTester(command, "configlib.test")) {
             assertThrows(RuntimeException.class, () -> tester.execute("config list", sender));

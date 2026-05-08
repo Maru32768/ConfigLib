@@ -3,7 +3,6 @@ package net.kunmc.lab.testplugin;
 import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.CommandLib;
 import net.kunmc.lab.commandlib.argument.IntegerArgument;
-import net.kunmc.lab.configlib.ConfigCommand;
 import net.kunmc.lab.configlib.ConfigCommandBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,9 +27,9 @@ public final class TestPlugin extends JavaPlugin {
         Config config = new Config(this);
         Config2 config2 = new Config2(this);
         AddValidatorTestConfig addValidatorTestConfig = new AddValidatorTestConfig(this);
-        ConfigCommand configCommand = new ConfigCommandBuilder(config).addConfig(config2)
-                                                                      .addConfig(addValidatorTestConfig)
-                                                                      .build();
+        Command configCommand = new ConfigCommandBuilder(config).addConfig(config2)
+                                                                .addConfig(addValidatorTestConfig)
+                                                                .build();
 
         CommandLib.register(this, new Command("test") {{
             addChildren(configCommand);

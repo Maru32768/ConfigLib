@@ -1,6 +1,5 @@
 package net.kunmc.lab.configlib;
 
-import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.CommonCommandContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,7 +24,7 @@ public final class ConfigCommandDescriptions {
     /**
      * Returns ConfigLib's built-in command text provider.
      * <p>
-     * The default provider uses {@link CommandContext#getLanguage()} and supports English and Japanese.
+     * The default provider uses {@link CommonCommandContext#getLanguage()} and supports English and Japanese.
      * Unsupported languages fall back to English.
      * </p>
      */
@@ -249,98 +248,102 @@ public final class ConfigCommandDescriptions {
         return DEFAULT_PROVIDER.describe(ctx, key, args);
     }
 
-    static Function<CommandContext, String> root(Provider provider) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> root(Provider provider) {
         return ctx -> provider.describe(ctx, Key.ROOT);
     }
 
-    static Function<CommandContext, String> config(Provider provider, String configName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> config(Provider provider, String configName) {
         return ctx -> provider.describe(ctx, Key.CONFIG, configName);
     }
 
-    static Function<CommandContext, String> list(Provider provider) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> list(Provider provider) {
         return ctx -> provider.describe(ctx, Key.LIST);
     }
 
-    static Function<CommandContext, String> reload(Provider provider) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> reload(Provider provider) {
         return ctx -> provider.describe(ctx, Key.RELOAD);
     }
 
-    static Function<CommandContext, String> reloadConfig(Provider provider, String configName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> reloadConfig(Provider provider,
+                                                                                   String configName) {
         return ctx -> provider.describe(ctx, Key.RELOAD_CONFIG, configName);
     }
 
-    static Function<CommandContext, String> reset(Provider provider) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> reset(Provider provider) {
         return ctx -> provider.describe(ctx, Key.RESET);
     }
 
-    static Function<CommandContext, String> resetConfig(Provider provider, String configName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> resetConfig(Provider provider,
+                                                                                  String configName) {
         return ctx -> provider.describe(ctx, Key.RESET_CONFIG, configName);
     }
 
-    static Function<CommandContext, String> history(Provider provider) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> history(Provider provider) {
         return ctx -> provider.describe(ctx, Key.HISTORY);
     }
 
-    static Function<CommandContext, String> historyConfig(Provider provider, String configName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> historyConfig(Provider provider,
+                                                                                    String configName) {
         return ctx -> provider.describe(ctx, Key.HISTORY_CONFIG, configName);
     }
 
-    static Function<CommandContext, String> historyIndex(Provider provider) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> historyIndex(Provider provider) {
         return ctx -> provider.describe(ctx, Key.HISTORY_INDEX);
     }
 
-    static Function<CommandContext, String> historyDiff(Provider provider) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> historyDiff(Provider provider) {
         return ctx -> provider.describe(ctx, Key.HISTORY_DIFF);
     }
 
-    static Function<CommandContext, String> audit(Provider provider) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> audit(Provider provider) {
         return ctx -> provider.describe(ctx, Key.AUDIT);
     }
 
-    static Function<CommandContext, String> auditConfig(Provider provider, String configName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> auditConfig(Provider provider,
+                                                                                  String configName) {
         return ctx -> provider.describe(ctx, Key.AUDIT_CONFIG, configName);
     }
 
-    static Function<CommandContext, String> auditIndex(Provider provider) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> auditIndex(Provider provider) {
         return ctx -> provider.describe(ctx, Key.AUDIT_INDEX);
     }
 
-    static Function<CommandContext, String> undo(Provider provider) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> undo(Provider provider) {
         return ctx -> provider.describe(ctx, Key.UNDO);
     }
 
-    static Function<CommandContext, String> undoConfig(Provider provider, String configName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> undoConfig(Provider provider, String configName) {
         return ctx -> provider.describe(ctx, Key.UNDO_CONFIG, configName);
     }
 
-    static Function<CommandContext, String> undoIndex(Provider provider) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> undoIndex(Provider provider) {
         return ctx -> provider.describe(ctx, Key.UNDO_INDEX);
     }
 
-    static Function<CommandContext, String> diff(Provider provider) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> diff(Provider provider) {
         return ctx -> provider.describe(ctx, Key.DIFF);
     }
 
-    static Function<CommandContext, String> diffConfig(Provider provider, String configName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> diffConfig(Provider provider, String configName) {
         return ctx -> provider.describe(ctx, Key.DIFF_CONFIG, configName);
     }
 
-    static Function<CommandContext, String> diffDefault(Provider provider) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> diffDefault(Provider provider) {
         return ctx -> provider.describe(ctx, Key.DIFF_DEFAULT);
     }
 
-    static Function<CommandContext, String> diffIndex(Provider provider) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> diffIndex(Provider provider) {
         return ctx -> provider.describe(ctx, Key.DIFF_INDEX);
     }
 
-    static Function<CommandContext, String> diffIndexPair(Provider provider) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> diffIndexPair(Provider provider) {
         return ctx -> provider.describe(ctx, Key.DIFF_INDEX_PAIR);
     }
 
-    static Function<CommandContext, String> field(Provider provider,
-                                                  String entryName,
-                                                  boolean getEnabled,
-                                                  boolean modifyEnabled) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> field(Provider provider,
+                                                                            String entryName,
+                                                                            boolean getEnabled,
+                                                                            boolean modifyEnabled) {
         if (getEnabled && modifyEnabled) {
             return ctx -> provider.describe(ctx, Key.FIELD_GET_MODIFY, entryName);
         }
@@ -350,51 +353,51 @@ public final class ConfigCommandDescriptions {
         return ctx -> provider.describe(ctx, Key.FIELD_MODIFY, entryName);
     }
 
-    static Function<CommandContext, String> set(Provider provider, String entryName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> set(Provider provider, String entryName) {
         return ctx -> provider.describe(ctx, Key.SET, entryName);
     }
 
-    static Function<CommandContext, String> resetEntry(Provider provider, String entryName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> resetEntry(Provider provider, String entryName) {
         return ctx -> provider.describe(ctx, Key.RESET_ENTRY, entryName);
     }
 
-    static Function<CommandContext, String> add(Provider provider, String entryName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> add(Provider provider, String entryName) {
         return ctx -> provider.describe(ctx, Key.ADD, entryName);
     }
 
-    static Function<CommandContext, String> remove(Provider provider, String entryName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> remove(Provider provider, String entryName) {
         return ctx -> provider.describe(ctx, Key.REMOVE, entryName);
     }
 
-    static Function<CommandContext, String> clear(Provider provider, String entryName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> clear(Provider provider, String entryName) {
         return ctx -> provider.describe(ctx, Key.CLEAR, entryName);
     }
 
-    static Function<CommandContext, String> increment(Provider provider, String entryName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> increment(Provider provider, String entryName) {
         return ctx -> provider.describe(ctx, Key.INCREMENT, entryName);
     }
 
-    static Function<CommandContext, String> incrementBy(Provider provider, String entryName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> incrementBy(Provider provider, String entryName) {
         return ctx -> provider.describe(ctx, Key.INCREMENT_BY, entryName);
     }
 
-    static Function<CommandContext, String> decrement(Provider provider, String entryName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> decrement(Provider provider, String entryName) {
         return ctx -> provider.describe(ctx, Key.DECREMENT, entryName);
     }
 
-    static Function<CommandContext, String> decrementBy(Provider provider, String entryName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> decrementBy(Provider provider, String entryName) {
         return ctx -> provider.describe(ctx, Key.DECREMENT_BY, entryName);
     }
 
-    static Function<CommandContext, String> put(Provider provider, String entryName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> put(Provider provider, String entryName) {
         return ctx -> provider.describe(ctx, Key.PUT, entryName);
     }
 
-    static Function<CommandContext, String> removeMap(Provider provider, String entryName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> removeMap(Provider provider, String entryName) {
         return ctx -> provider.describe(ctx, Key.REMOVE_MAP, entryName);
     }
 
-    static Function<CommandContext, String> clearMap(Provider provider, String entryName) {
+    static <C extends CommonCommandContext<?, ?>> Function<C, String> clearMap(Provider provider, String entryName) {
         return ctx -> provider.describe(ctx, Key.CLEAR_MAP, entryName);
     }
 

@@ -9,7 +9,6 @@ import net.kunmc.lab.configlib.store.InMemoryConfigStore;
 import net.kunmc.lab.configlib.value.StringValue;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import static net.kunmc.lab.configlib.ConfigCommandTestSupport.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -62,11 +61,8 @@ class ConfigMaskedCommandTest {
     }
 
     private static FakeSender senderWithoutRevealPermission() {
-        FakeSender sender = FakeSender.player("Steve");
-        Mockito.when(sender.asSender()
-                           .hasPermission(Mockito.anyString()))
-               .thenAnswer(invocation -> !MaskedRevealPolicy.DEFAULT_REVEAL_PERMISSION.equals(invocation.getArgument(0)));
-        return sender;
+        return FakeSender.player("Steve")
+                         .denyPermissions(MaskedRevealPolicy.DEFAULT_REVEAL_PERMISSION);
     }
 
     private static void assertNoRawSecret(FakeSender sender) {

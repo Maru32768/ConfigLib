@@ -1,6 +1,6 @@
 package net.kunmc.lab.configlib.value.collection;
 
-import net.kunmc.lab.commandlib.argument.StringArgument;
+import net.kunmc.lab.commandlib.argument.CommonStringArgument;
 import net.kunmc.lab.commandlib.exception.ArgumentValidationException;
 import net.kunmc.lab.configlib.ArgumentDefinition;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +13,7 @@ import java.util.Set;
 public class StringSetValue extends SetValue<String, StringSetValue> {
     private final transient List<String> allowableStringList = new ArrayList<>();
     protected transient String name = "string";
-    protected transient StringArgument.Type type = StringArgument.Type.PHRASE;
+    protected transient CommonStringArgument.Type type = CommonStringArgument.Type.PHRASE;
 
     public StringSetValue(String... strings) {
         this(new HashSet<>(List.of(strings)));
@@ -33,33 +33,34 @@ public class StringSetValue extends SetValue<String, StringSetValue> {
         return this;
     }
 
-    public StringSetValue type(@NotNull StringArgument.Type type) {
+    public StringSetValue type(@NotNull CommonStringArgument.Type type) {
         this.type = type;
         return this;
     }
 
     @Override
     protected List<ArgumentDefinition<Set<String>>> argumentDefinitionsForAdd() {
-        return List.of(new ArgumentDefinition<>(new StringArgument(name, type).suggestionAction(sb -> {
-                                                                                  allowableStringList.stream()
-                                                                                                     .filter(s -> !value.contains(s))
-                                                                                                     .forEach(sb::suggest);
-                                                                              })
-                                                                              .validator((x, ctx) -> {
-                                                                                  if (allowableStringList.stream()
-                                                                                                         .noneMatch(s -> s.equals(
-                                                                                                                 x))) {
-                                                                                      throw new ArgumentValidationException(
-                                                                                              x + "は不正な引数です");
-                                                                                  }
-                                                                              }), (s, ctx) -> {
+        return List.of(new ArgumentDefinition<>(new CommonStringArgument<>(name, type).suggestionAction(sb -> {
+                                                                                          allowableStringList.stream()
+                                                                                                             .filter(s -> !value.contains(s))
+                                                                                                             .forEach(sb::suggest);
+                                                                                      })
+                                                                                      .validator((x, ctx) -> {
+                                                                                          if (allowableStringList.stream()
+                                                                                                                 .noneMatch(
+                                                                                                                         s -> s.equals(
+                                                                                                                                 x))) {
+                                                                                              throw new ArgumentValidationException(
+                                                                                                      x + "は不正な引数です");
+                                                                                          }
+                                                                                      }), (s, ctx) -> {
             return Set.of(s);
         }));
     }
 
     @Override
     protected List<ArgumentDefinition<Set<String>>> argumentDefinitionsForRemove() {
-        return List.of(new ArgumentDefinition<>(new StringArgument(name).suggestionAction(sb -> {
+        return List.of(new ArgumentDefinition<>(new CommonStringArgument<>(name).suggestionAction(sb -> {
             value.forEach(sb::suggest);
         }), (s, ctx) -> {
             return Set.of(s);

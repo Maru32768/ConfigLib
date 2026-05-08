@@ -1,7 +1,7 @@
 package net.kunmc.lab.configlib;
 
 import net.kunmc.lab.commandlib.CommandActor;
-import net.kunmc.lab.commandlib.CommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.configlib.schema.ConfigSchemaEntry;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,7 +17,7 @@ public interface MaskedRevealPolicy {
         return actor.isConsole() || actor.isOperator() || actor.hasPermission(DEFAULT_REVEAL_PERMISSION);
     };
 
-    boolean canReveal(@NotNull CommandContext ctx,
+    boolean canReveal(@NotNull CommonCommandContext<?, ?> ctx,
                       @NotNull CommonBaseConfig config,
                       @NotNull ConfigSchemaEntry<?> entry);
 }

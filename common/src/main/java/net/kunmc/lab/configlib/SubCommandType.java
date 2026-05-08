@@ -1,13 +1,10 @@
 package net.kunmc.lab.configlib;
 
-import net.kunmc.lab.commandlib.Command;
+import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 enum SubCommandType {
     Reload("reload",
@@ -15,23 +12,23 @@ enum SubCommandType {
            x -> !x.schema()
                   .entries()
                   .isEmpty(),
-           ConfigReloadCommand::new),
+           ConfigReloadCommand::create),
     Reset("reset",
           CommonBaseConfig::isResetEnabled,
           x -> !x.schema()
                  .entries()
                  .isEmpty(),
-          ConfigResetCommand::new),
-    History("history", CommonBaseConfig::isHistoryEnabled, x -> true, ConfigHistoryCommand::new),
-    Audit("audit", CommonBaseConfig::isHistoryEnabled, x -> true, ConfigAuditCommand::new),
-    Undo("undo", CommonBaseConfig::isHistoryEnabled, x -> true, ConfigUndoCommand::new),
-    Diff("diff", CommonBaseConfig::isHistoryEnabled, x -> true, ConfigDiffCommand::new),
+          ConfigResetCommand::create),
+    History("history", CommonBaseConfig::isHistoryEnabled, x -> true, ConfigHistoryCommand::create),
+    Audit("audit", CommonBaseConfig::isHistoryEnabled, x -> true, ConfigAuditCommand::create),
+    Undo("undo", CommonBaseConfig::isHistoryEnabled, x -> true, ConfigUndoCommand::create),
+    Diff("diff", CommonBaseConfig::isHistoryEnabled, x -> true, ConfigDiffCommand::create),
     List("list",
          CommonBaseConfig::isListEnabled,
          x -> !x.schema()
                 .entries()
                 .isEmpty(),
-         ConfigListCommand::new);
+         ConfigListCommand::create);
 
     public final String name;
     private final Predicate<CommonBaseConfig> isEnabledFor;
@@ -56,23 +53,18 @@ enum SubCommandType {
         return isEnabledFor.test(config);
     }
 
-    public Map<CommonBaseConfig, Boolean> hasEntryFor(List<CommonBaseConfig> configs) {
-        return configs.stream()
-                      .collect(Collectors.toMap(baseConfig -> baseConfig, this::hasEntryFor, (a, b) -> {
-                          throw new IllegalStateException();
-                      }, LinkedHashMap::new));
-    }
-
-    public Command of(Set<CommonBaseConfig> configs,
-                      ConfigCommandDescriptions.Provider descriptions,
-                      MaskedRevealPolicy maskedRevealPolicy) {
-        return instantiator.apply(configs, descriptions, maskedRevealPolicy);
+    public <C extends CommonCommandContext<?, ?>, T extends CommonCommand<C, T>> T create(CommandFactory<C, T> commandFactory,
+                                                                                          Set<CommonBaseConfig> configs,
+                                                                                          ConfigCommandDescriptions.Provider descriptions,
+                                                                                          MaskedRevealPolicy maskedRevealPolicy) {
+        return instantiator.apply(commandFactory, configs, descriptions, maskedRevealPolicy);
     }
 
     @FunctionalInterface
     private interface Instantiator {
-        Command apply(Set<CommonBaseConfig> configs,
-                      ConfigCommandDescriptions.Provider descriptions,
-                      MaskedRevealPolicy maskedRevealPolicy);
+        <C extends CommonCommandContext<?, ?>, T extends CommonCommand<C, T>> T apply(CommandFactory<C, T> commandFactory,
+                                                                                      Set<CommonBaseConfig> configs,
+                                                                                      ConfigCommandDescriptions.Provider descriptions,
+                                                                                      MaskedRevealPolicy maskedRevealPolicy);
     }
 }

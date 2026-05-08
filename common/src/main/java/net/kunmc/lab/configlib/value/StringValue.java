@@ -1,7 +1,7 @@
 package net.kunmc.lab.configlib.value;
 
-import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.StringArgument;
+import net.kunmc.lab.commandlib.CommonCommandContext;
+import net.kunmc.lab.commandlib.argument.CommonStringArgument;
 import net.kunmc.lab.commandlib.exception.ArgumentValidationException;
 import net.kunmc.lab.commandlib.suggestion.SuggestionAction;
 import net.kunmc.lab.configlib.ArgumentDefinition;
@@ -16,8 +16,8 @@ public class StringValue extends SingleValue<String, StringValue> {
     private final int min;
     private final int max;
     protected transient String name = "string";
-    protected transient StringArgument.Type type = StringArgument.Type.PHRASE;
-    protected transient SuggestionAction<CommandContext> suggestionAction = sb -> {
+    protected transient CommonStringArgument.Type type = CommonStringArgument.Type.PHRASE;
+    protected transient SuggestionAction<CommonCommandContext<?, ?>> suggestionAction = sb -> {
         allowableStringList.forEach(sb::suggest);
     };
 
@@ -36,7 +36,7 @@ public class StringValue extends SingleValue<String, StringValue> {
         return this;
     }
 
-    public StringValue type(@NotNull StringArgument.Type type) {
+    public StringValue type(@NotNull CommonStringArgument.Type type) {
         this.type = type;
         return this;
     }
@@ -46,30 +46,31 @@ public class StringValue extends SingleValue<String, StringValue> {
         return this;
     }
 
-    public StringValue suggestionAction(@NotNull SuggestionAction<CommandContext> action) {
+    public StringValue suggestionAction(@NotNull SuggestionAction<CommonCommandContext<?, ?>> action) {
         this.suggestionAction = action;
         return this;
     }
 
     @Override
     protected List<ArgumentDefinition<String>> argumentDefinitions() {
-        return List.of(new ArgumentDefinition<>(new StringArgument(name, type).suggestionAction(suggestionAction)
-                                                                              .validator((x, ctx) -> {
-                                                                                  if (!allowableStringList.isEmpty()) {
-                                                                                      if (allowableStringList.stream()
-                                                                                                             .noneMatch(
-                                                                                                                     s -> s.equals(
-                                                                                                                             x))) {
-                                                                                          throw new ArgumentValidationException(
-                                                                                                  allowableStringList + "の中から文字列を入力してください");
-                                                                                      }
-                                                                                  }
+        return List.of(new ArgumentDefinition<>(new CommonStringArgument<>(name,
+                                                                           type).suggestionAction(suggestionAction)
+                                                                                .validator((x, ctx) -> {
+                                                                                    if (!allowableStringList.isEmpty()) {
+                                                                                        if (allowableStringList.stream()
+                                                                                                               .noneMatch(
+                                                                                                                       s -> s.equals(
+                                                                                                                               x))) {
+                                                                                            throw new ArgumentValidationException(
+                                                                                                    allowableStringList + "の中から文字列を入力してください");
+                                                                                        }
+                                                                                    }
 
-                                                                                  if (x.length() < min || x.length() > max) {
-                                                                                      throw new ArgumentValidationException(
-                                                                                              min + "以上" + max + "以下の文字数で入力してください");
-                                                                                  }
-                                                                              }), (s, ctx) -> {
+                                                                                    if (x.length() < min || x.length() > max) {
+                                                                                        throw new ArgumentValidationException(
+                                                                                                min + "以上" + max + "以下の文字数で入力してください");
+                                                                                    }
+                                                                                }), (s, ctx) -> {
             return s;
         }));
     }

@@ -1,14 +1,14 @@
 package net.kunmc.lab.configlib.store;
 
-import net.kunmc.lab.commandlib.CommandContext;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Entity;
+import net.kunmc.lab.commandlib.CommandActor;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Metadata that explains an accepted config change.
@@ -53,11 +53,11 @@ public final class ChangeTrace {
         return new ChangeTrace(ChangeSource.UNDO, null, null, List.of(path));
     }
 
-    public static ChangeTrace command(CommandContext ctx, String reason, String... paths) {
+    public static ChangeTrace command(CommonCommandContext<?, ?> ctx, String reason, String... paths) {
         return new ChangeTrace(ChangeSource.COMMAND, actor(ctx), reason, Arrays.asList(paths));
     }
 
-    public static ChangeTrace command(CommandContext ctx, String reason, List<String> paths) {
+    public static ChangeTrace command(CommonCommandContext<?, ?> ctx, String reason, List<String> paths) {
         return new ChangeTrace(ChangeSource.COMMAND, actor(ctx), reason, paths);
     }
 
@@ -94,10 +94,11 @@ public final class ChangeTrace {
         return new ChangeTrace(source, actor, reason, paths);
     }
 
-    private static ChangeActor actor(CommandContext ctx) {
-        CommandSender sender = ctx.getSender();
-        String uuid = sender instanceof Entity ? ((Entity) sender).getUniqueId()
-                                                                  .toString() : null;
-        return new ChangeActor(sender.getName(), uuid);
+    private static ChangeActor actor(CommonCommandContext<?, ?> ctx) {
+        CommandActor actor = ctx.getActor();
+        String uuid = actor.getUniqueId()
+                           .map(UUID::toString)
+                           .orElse(null);
+        return new ChangeActor(actor.getName(), uuid);
     }
 }

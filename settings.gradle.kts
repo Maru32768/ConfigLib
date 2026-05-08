@@ -19,9 +19,6 @@ includeBuild("../CommandLib") {
         substitute(module("com.github.Maru32768.CommandLib:spigot")).using(project(":spigot"))
         substitute(module("com.github.Maru32768.CommandLib:forge")).using(project(":forge"))
         substitute(module("com.github.Maru32768.CommandLib:spigot-testing")).using(project(":spigot-testing"))
-        substitute(module("net.kunmc.lab:common")).using(project(":common"))
-        substitute(module("net.kunmc.lab:spigot")).using(project(":spigot"))
-        substitute(module("net.kunmc.lab:forge")).using(project(":forge"))
-        substitute(module("net.kunmc.lab:spigot-testing")).using(project(":spigot-testing"))
+        substitute(module("com.github.Maru32768.CommandLib:common-testing")).using(project(":common-testing"))
     }
 }

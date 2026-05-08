@@ -1,7 +1,7 @@
 package net.kunmc.lab.configlib.value.tuple;
 
 import net.kunmc.lab.commandlib.ArgumentBuilder;
-import net.kunmc.lab.commandlib.CommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.commandlib.exception.ArgumentValidationException;
 import net.kunmc.lab.configlib.ArgumentDefinition;
 import net.kunmc.lab.configlib.SingleValue;
@@ -98,7 +98,7 @@ public abstract class PairValue<L, R, T extends PairValue<L, R, T>> extends Sing
         }
 
         @Override
-        public ConfigPair<L, R> mapArgument(CommandContext ctx) throws ArgumentValidationException {
+        public ConfigPair<L, R> mapArgument(CommonCommandContext<?, ?> ctx) throws ArgumentValidationException {
             ConfigPair<L, R> value = ConfigPair.of(left.mapArgument(ctx), right.mapArgument(ctx));
             validator.accept(value);
             return value;

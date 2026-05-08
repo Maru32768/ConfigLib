@@ -1,6 +1,6 @@
 package net.kunmc.lab.configlib.value.tuple;
 
-import net.kunmc.lab.commandlib.argument.IntegerArgument;
+import net.kunmc.lab.commandlib.argument.CommonIntegerArgument;
 import net.kunmc.lab.configlib.ArgumentDefinition;
 
 public abstract class Integer2ObjectPairValue<R, T extends Integer2ObjectPairValue<R, T>> extends PairValue<Integer, R, T> {
@@ -22,7 +22,7 @@ public abstract class Integer2ObjectPairValue<R, T extends Integer2ObjectPairVal
     }
 
     protected ArgumentDefinition<Integer> leftArgumentDefinition() {
-        return new ArgumentDefinition<>(new IntegerArgument("integer", min, max), (n, ctx) -> {
+        return new ArgumentDefinition<>(new CommonIntegerArgument("integer", min, max), (n, ctx) -> {
             return n;
         });
     }

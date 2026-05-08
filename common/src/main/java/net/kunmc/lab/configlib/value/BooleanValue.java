@@ -1,6 +1,6 @@
 package net.kunmc.lab.configlib.value;
 
-import net.kunmc.lab.commandlib.argument.BooleanArgument;
+import net.kunmc.lab.commandlib.argument.CommonBooleanArgument;
 import net.kunmc.lab.configlib.ArgumentDefinition;
 import net.kunmc.lab.configlib.SingleValue;
 import org.jetbrains.annotations.NotNull;
@@ -66,7 +66,7 @@ public class BooleanValue extends SingleValue<Boolean, BooleanValue> {
 
     @Override
     protected List<ArgumentDefinition<Boolean>> argumentDefinitions() {
-        return List.of(new ArgumentDefinition<>(new BooleanArgument("bool"), (b, ctx) -> {
+        return List.of(new ArgumentDefinition<>(new CommonBooleanArgument("bool"), (b, ctx) -> {
             return b;
         }));
     }

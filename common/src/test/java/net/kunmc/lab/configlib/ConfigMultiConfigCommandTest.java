@@ -1,8 +1,8 @@
 package net.kunmc.lab.configlib;
 
-import net.kunmc.lab.commandlib.Command;
 import net.kunmc.lab.commandlib.CommandTester;
 import net.kunmc.lab.commandlib.FakeSender;
+import net.kunmc.lab.commandlib.TestCommand;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +28,7 @@ class ConfigMultiConfigCommandTest {
         first = init(new TestConfig());
         second = init(new OtherConfig());
         FakeSender sender = FakeSender.console();
-        Command command = commandFor(first, second);
+        TestCommand command = commandFor(first, second);
 
         try (CommandTester tester = new CommandTester(command, "configlib.test")) {
             tester.execute("config list", sender);

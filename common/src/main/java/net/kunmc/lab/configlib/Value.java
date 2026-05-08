@@ -1,6 +1,6 @@
 package net.kunmc.lab.configlib;
 
-import net.kunmc.lab.commandlib.CommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.commandlib.exception.CommandPrerequisiteException;
 import net.kunmc.lab.configlib.exception.InvalidValueException;
 import net.kunmc.lab.configlib.util.function.ExecutionCondition;
@@ -249,7 +249,7 @@ public abstract class Value<E, T extends Value<E, T>> {
     /**
      * Sets a simple boolean condition. Uses a default error message when denied.
      */
-    public final T executableIf(Predicate<CommandContext> condition) {
+    public final T executableIf(Predicate<CommonCommandContext<?, ?>> condition) {
         return executableIf(ctx -> {
             if (!condition.test(ctx)) {
                 throw new CommandPrerequisiteException(c -> c.sendFailure(ConfigCommandDescriptions.describe(c,
@@ -258,7 +258,7 @@ public abstract class Value<E, T extends Value<E, T>> {
         });
     }
 
-    final void checkExecutable(CommandContext ctx) throws CommandPrerequisiteException {
+    final void checkExecutable(CommonCommandContext<?, ?> ctx) throws CommandPrerequisiteException {
         if (executableIf != null) {
             executableIf.check(ctx);
         }

@@ -1,6 +1,6 @@
 package net.kunmc.lab.configlib.value.map;
 
-import net.kunmc.lab.commandlib.argument.IntegerArgument;
+import net.kunmc.lab.commandlib.argument.CommonIntegerArgument;
 import net.kunmc.lab.configlib.ArgumentDefinition;
 
 import java.util.HashMap;
@@ -19,7 +19,7 @@ public class String2IntegerMapValue extends String2ObjectMapValue<Integer, Strin
     @Override
     protected List<PutArgumentDefinition<String, Integer>> argumentDefinitionsForPut() {
         return List.of(new PutArgumentDefinition<>(keyArgumentDefinitionForPut(),
-                                                   new ArgumentDefinition<>(new IntegerArgument("integer"),
+                                                   new ArgumentDefinition<>(new CommonIntegerArgument("integer"),
                                                                             (n, ctx) -> {
                                                                                 return n;
                                                                             })));

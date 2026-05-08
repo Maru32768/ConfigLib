@@ -1,22 +1,24 @@
 package net.kunmc.lab.configlib;
 
-import net.kunmc.lab.commandlib.Command;
+import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.configlib.exception.ConfigValidationException;
 import net.kunmc.lab.configlib.schema.ConfigSchemaEntry;
 import net.kunmc.lab.configlib.store.ChangeTrace;
 
 import java.util.Collection;
 
-class ModifyClearCommand extends Command {
-    public ModifyClearCommand(CommonBaseConfig config,
-                              ConfigSchemaEntry<?> schemaEntry,
-                              CollectionValue value,
-                              ConfigCommandDescriptions.Provider descriptions) {
-        super("clear");
-        description(ConfigCommandDescriptions.clear(descriptions, schemaEntry.entryName()));
+final class ModifyClearCommand {
+    static <C extends CommonCommandContext<?, ?>, T extends CommonCommand<C, T>> T create(CommandFactory<C, T> commandFactory,
+                                                                                          CommonBaseConfig config,
+                                                                                          ConfigSchemaEntry<?> schemaEntry,
+                                                                                          CollectionValue value,
+                                                                                          ConfigCommandDescriptions.Provider descriptions) {
+        T command = commandFactory.create("clear");
+        command.description(ConfigCommandDescriptions.clear(descriptions, schemaEntry.entryName()));
 
-        addPrerequisite(value::checkExecutable);
-        execute(ctx -> {
+        command.addPrerequisite(value::checkExecutable);
+        command.execute(ctx -> {
             try {
                 Collection cleared = (Collection) value.copyValue(value.value());
                 cleared.clear();
@@ -40,5 +42,6 @@ class ModifyClearCommand extends Command {
                                                   ConfigCommandDescriptions.Key.COLLECTION_CLEAR_SUCCESS,
                                                   schemaEntry.entryName()));
         });
+        return command;
     }
 }

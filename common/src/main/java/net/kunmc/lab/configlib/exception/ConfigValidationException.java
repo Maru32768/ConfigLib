@@ -1,6 +1,6 @@
 package net.kunmc.lab.configlib.exception;
 
-import net.kunmc.lab.commandlib.CommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.configlib.ConfigCommandDescriptions;
 import net.kunmc.lab.configlib.schema.ConfigSchemaPath;
 
@@ -39,11 +39,11 @@ public final class ConfigValidationException extends RuntimeException {
         return validationCause;
     }
 
-    public void sendMessage(CommandContext ctx) {
+    public void sendMessage(CommonCommandContext<?, ?> ctx) {
         sendMessage(ctx, ConfigCommandDescriptions.defaultProvider());
     }
 
-    public void sendMessage(CommandContext ctx, ConfigCommandDescriptions.Provider descriptions) {
+    public void sendMessage(CommonCommandContext<?, ?> ctx, ConfigCommandDescriptions.Provider descriptions) {
         ctx.sendFailure(descriptions.describe(ctx,
                                               ConfigCommandDescriptions.Key.VALIDATION_FAILED,
                                               path.asString(),

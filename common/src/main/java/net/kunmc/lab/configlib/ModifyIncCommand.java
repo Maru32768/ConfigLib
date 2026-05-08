@@ -1,41 +1,42 @@
 package net.kunmc.lab.configlib;
 
-import net.kunmc.lab.commandlib.Command;
-import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.DoubleArgument;
+import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.CommonCommandContext;
+import net.kunmc.lab.commandlib.argument.CommonDoubleArgument;
 import net.kunmc.lab.configlib.exception.ConfigValidationException;
 import net.kunmc.lab.configlib.schema.ConfigSchemaEntry;
 import net.kunmc.lab.configlib.store.ChangeTrace;
 
-class ModifyIncCommand extends Command {
-    private final ConfigSchemaEntry<?> schemaEntry;
-    private final NumericValue value;
-    private final CommonBaseConfig config;
-    private final ConfigCommandDescriptions.Provider descriptions;
-    private final MaskedRevealPolicy maskedRevealPolicy;
-
-    public ModifyIncCommand(CommonBaseConfig config,
-                            ConfigSchemaEntry<?> schemaEntry,
-                            NumericValue value,
-                            ConfigCommandDescriptions.Provider descriptions,
-                            MaskedRevealPolicy maskedRevealPolicy) {
-        super("inc");
-        description(ConfigCommandDescriptions.increment(descriptions, schemaEntry.entryName()));
-
-        this.config = config;
-        this.schemaEntry = schemaEntry;
-        this.value = value;
-        this.descriptions = descriptions;
-        this.maskedRevealPolicy = maskedRevealPolicy;
-
-        addPrerequisite(value::checkExecutable);
-        execute(ctx -> exec(1.0, ctx));
-        argument(new DoubleArgument("incValue")).description(ConfigCommandDescriptions.incrementBy(descriptions,
-                                                                                                   schemaEntry.entryName()))
-                                                .execute(this::exec);
+final class ModifyIncCommand {
+    static <C extends CommonCommandContext<?, ?>, T extends CommonCommand<C, T>> T create(CommandFactory<C, T> commandFactory,
+                                                                                          CommonBaseConfig config,
+                                                                                          ConfigSchemaEntry<?> schemaEntry,
+                                                                                          NumericValue value,
+                                                                                          ConfigCommandDescriptions.Provider descriptions,
+                                                                                          MaskedRevealPolicy maskedRevealPolicy) {
+        T command = commandFactory.create("inc");
+        command.description(ConfigCommandDescriptions.increment(descriptions, schemaEntry.entryName()));
+        command.addPrerequisite(value::checkExecutable);
+        command.execute(ctx -> exec(1.0, ctx, config, schemaEntry, value, descriptions, maskedRevealPolicy));
+        command.argument(new CommonDoubleArgument<>("incValue"))
+               .description(ConfigCommandDescriptions.incrementBy(descriptions, schemaEntry.entryName()))
+               .execute((amount, ctx) -> exec(amount,
+                                              ctx,
+                                              config,
+                                              schemaEntry,
+                                              value,
+                                              descriptions,
+                                              maskedRevealPolicy));
+        return command;
     }
 
-    private void exec(double amount, CommandContext ctx) {
+    private static void exec(double amount,
+                             CommonCommandContext<?, ?> ctx,
+                             CommonBaseConfig config,
+                             ConfigSchemaEntry<?> schemaEntry,
+                             NumericValue value,
+                             ConfigCommandDescriptions.Provider descriptions,
+                             MaskedRevealPolicy maskedRevealPolicy) {
         if (value.compare(value.max.doubleValue() - amount) > 0) {
             amount = value.max.doubleValue() - ((Number) value.value).doubleValue();
         }

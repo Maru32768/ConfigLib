@@ -1,8 +1,8 @@
 package net.kunmc.lab.configlib;
 
-import net.kunmc.lab.commandlib.Command;
-import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.IntegerArgument;
+import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.CommonCommandContext;
+import net.kunmc.lab.commandlib.argument.CommonIntegerArgument;
 import net.kunmc.lab.configlib.schema.ConfigSchemaEntry;
 import net.kunmc.lab.configlib.schema.DisplayContext;
 import net.kunmc.lab.configlib.store.HistoryEntry;
@@ -13,14 +13,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-class ConfigDiffCommand extends Command {
+final class ConfigDiffCommand {
     private static final String DIFF_ARROW = " -> ";
 
-    public ConfigDiffCommand(@NotNull Set<CommonBaseConfig> configs,
-                             ConfigCommandDescriptions.Provider descriptions,
-                             MaskedRevealPolicy maskedRevealPolicy) {
-        super(SubCommandType.Diff.name);
-        description(ConfigCommandDescriptions.diff(descriptions));
+    static <C extends CommonCommandContext<?, ?>, T extends CommonCommand<C, T>> T create(CommandFactory<C, T> commandFactory,
+                                                                                          @NotNull Set<CommonBaseConfig> configs,
+                                                                                          ConfigCommandDescriptions.Provider descriptions,
+                                                                                          MaskedRevealPolicy maskedRevealPolicy) {
+        T command = commandFactory.create(SubCommandType.Diff.name);
+        command.description(ConfigCommandDescriptions.diff(descriptions));
 
         if (configs.isEmpty()) {
             throw new IllegalArgumentException("configs is empty");
@@ -30,39 +31,28 @@ class ConfigDiffCommand extends Command {
             // /config diff <name> default
             // /config diff <name> <index>
             // /config diff <name> <index1> <index2>
-            configs.forEach(config -> addChildren(new Command(config.entryName()) {{
-                description(ConfigCommandDescriptions.diffConfig(descriptions, config.entryName()));
-                addChildren(new Command("default") {{
-                    description(ConfigCommandDescriptions.diffDefault(descriptions));
-                    execute(ctx -> execDefaultDiff(ctx, config, descriptions, maskedRevealPolicy));
-                }});
-                argument(new IntegerArgument("index",
-                                             1,
-                                             Integer.MAX_VALUE)).description(ConfigCommandDescriptions.diffIndex(
-                                                                        descriptions))
-                                                                .execute((index, ctx) -> {
-                                                                    execDiff(ctx,
-                                                                             config,
-                                                                             0,
-                                                                             index,
-                                                                             descriptions,
-                                                                             maskedRevealPolicy);
-                                                                });
-                argument(new IntegerArgument("index1", 0, Integer.MAX_VALUE),
-                         new IntegerArgument("index2",
-                                             0,
-                                             Integer.MAX_VALUE)).description(ConfigCommandDescriptions.diffIndexPair(
-                                                                        descriptions))
-                                                                .execute((index1, index2, ctx) -> {
-                                                                    execDiff(ctx,
-                                                                             config,
-                                                                             index1,
-                                                                             index2,
-                                                                             descriptions,
-                                                                             maskedRevealPolicy);
-                                                                });
-            }}));
-            return;
+            configs.forEach(config -> {
+                T child = commandFactory.create(config.entryName());
+                child.description(ConfigCommandDescriptions.diffConfig(descriptions, config.entryName()));
+                T defaultChild = commandFactory.create("default");
+                defaultChild.description(ConfigCommandDescriptions.diffDefault(descriptions));
+                defaultChild.execute(ctx -> execDefaultDiff(ctx, config, descriptions, maskedRevealPolicy));
+                child.addChildren(defaultChild);
+                child.argument(new CommonIntegerArgument<>("index", 1, Integer.MAX_VALUE))
+                     .description(ConfigCommandDescriptions.diffIndex(descriptions))
+                     .execute((index, ctx) -> execDiff(ctx, config, 0, index, descriptions, maskedRevealPolicy));
+                child.argument(new CommonIntegerArgument<>("index1", 0, Integer.MAX_VALUE),
+                               new CommonIntegerArgument<>("index2", 0, Integer.MAX_VALUE))
+                     .description(ConfigCommandDescriptions.diffIndexPair(descriptions))
+                     .execute((index1, index2, ctx) -> execDiff(ctx,
+                                                                config,
+                                                                index1,
+                                                                index2,
+                                                                descriptions,
+                                                                maskedRevealPolicy));
+                command.addChildren(child);
+            });
+            return command;
         }
 
         // /config diff default
@@ -70,36 +60,26 @@ class ConfigDiffCommand extends Command {
         // /config diff <index1> <index2>
         CommonBaseConfig config = configs.iterator()
                                          .next();
-        addChildren(new Command("default") {{
-            description(ConfigCommandDescriptions.diffDefault(descriptions));
-            execute(ctx -> execDefaultDiff(ctx, config, descriptions, maskedRevealPolicy));
-        }});
-        argument(new IntegerArgument("index", 1, Integer.MAX_VALUE)).description(ConfigCommandDescriptions.diffIndex(
-                                                                            descriptions))
-                                                                    .execute((index, ctx) -> {
-                                                                        execDiff(ctx,
-                                                                                 config,
-                                                                                 0,
-                                                                                 index,
-                                                                                 descriptions,
-                                                                                 maskedRevealPolicy);
-                                                                    });
-        argument(new IntegerArgument("index1", 0, Integer.MAX_VALUE),
-                 new IntegerArgument("index2",
-                                     0,
-                                     Integer.MAX_VALUE)).description(ConfigCommandDescriptions.diffIndexPair(
-                                                                descriptions))
-                                                        .execute((index1, index2, ctx) -> {
-                                                            execDiff(ctx,
-                                                                     config,
-                                                                     index1,
-                                                                     index2,
-                                                                     descriptions,
-                                                                     maskedRevealPolicy);
-                                                        });
+        T defaultChild = commandFactory.create("default");
+        defaultChild.description(ConfigCommandDescriptions.diffDefault(descriptions));
+        defaultChild.execute(ctx -> execDefaultDiff(ctx, config, descriptions, maskedRevealPolicy));
+        command.addChildren(defaultChild);
+        command.argument(new CommonIntegerArgument<>("index", 1, Integer.MAX_VALUE))
+               .description(ConfigCommandDescriptions.diffIndex(descriptions))
+               .execute((index, ctx) -> execDiff(ctx, config, 0, index, descriptions, maskedRevealPolicy));
+        command.argument(new CommonIntegerArgument<>("index1", 0, Integer.MAX_VALUE),
+                         new CommonIntegerArgument<>("index2", 0, Integer.MAX_VALUE))
+               .description(ConfigCommandDescriptions.diffIndexPair(descriptions))
+               .execute((index1, index2, ctx) -> execDiff(ctx,
+                                                          config,
+                                                          index1,
+                                                          index2,
+                                                          descriptions,
+                                                          maskedRevealPolicy));
+        return command;
     }
 
-    static void execDiff(CommandContext ctx,
+    static void execDiff(CommonCommandContext<?, ?> ctx,
                          CommonBaseConfig config,
                          int index1,
                          int index2,
@@ -141,7 +121,7 @@ class ConfigDiffCommand extends Command {
         });
     }
 
-    static void execDefaultDiff(CommandContext ctx,
+    static void execDefaultDiff(CommonCommandContext<?, ?> ctx,
                                 CommonBaseConfig config,
                                 ConfigCommandDescriptions.Provider descriptions,
                                 MaskedRevealPolicy maskedRevealPolicy) {
@@ -174,7 +154,7 @@ class ConfigDiffCommand extends Command {
         });
     }
 
-    private static void emitDiff(CommandContext ctx,
+    private static void emitDiff(CommonCommandContext<?, ?> ctx,
                                  CommonBaseConfig liveConfig,
                                  CommonBaseConfig olderConfig,
                                  CommonBaseConfig newerConfig,

@@ -1,8 +1,8 @@
 package net.kunmc.lab.configlib;
 
 import net.kunmc.lab.commandlib.ArgumentBuilder;
-import net.kunmc.lab.commandlib.CommandContext;
 import net.kunmc.lab.commandlib.CommonArgument;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.commandlib.exception.ArgumentValidationException;
 import net.kunmc.lab.configlib.util.function.*;
 
@@ -20,19 +20,20 @@ public class ArgumentDefinition<T> implements ArgumentApplier, ArgumentMapper<T>
         this.mapper = mapper;
     }
 
-    public ArgumentDefinition(CommonArgument<T, CommandContext, ?> argument1) {
+    public ArgumentDefinition(CommonArgument<T, ? extends CommonCommandContext<?, ?>, ?> argument1) {
         this(singleArgumentApplier(argument1), singleArgumentMapper(argument1));
     }
 
-    private static <T> ArgumentApplier singleArgumentApplier(CommonArgument<T, CommandContext, ?> argument1) {
+    private static <T> ArgumentApplier singleArgumentApplier(CommonArgument<T, ? extends CommonCommandContext<?, ?>, ?> argument1) {
         return b -> b.argument(argument1);
     }
 
-    private static <T> ArgumentMapper<T> singleArgumentMapper(CommonArgument<T, CommandContext, ?> argument1) {
+    private static <T> ArgumentMapper<T> singleArgumentMapper(CommonArgument<T, ? extends CommonCommandContext<?, ?>, ?> argument1) {
         return ctx -> argument1.cast(ctx.getArgument(argument1.name()));
     }
 
-    public <A1> ArgumentDefinition(CommonArgument<A1, CommandContext, ?> argument1, BiArgumentMapper<A1, T> mapper) {
+    public <A1> ArgumentDefinition(CommonArgument<A1, ? extends CommonCommandContext<?, ?>, ?> argument1,
+                                   BiArgumentMapper<A1, T> mapper) {
         this(b -> {
             b.argument(argument1);
         }, (ctx) -> {
@@ -40,8 +41,8 @@ public class ArgumentDefinition<T> implements ArgumentApplier, ArgumentMapper<T>
         });
     }
 
-    public <A1, A2> ArgumentDefinition(CommonArgument<A1, CommandContext, ?> argument1,
-                                       CommonArgument<A2, CommandContext, ?> argument2,
+    public <A1, A2> ArgumentDefinition(CommonArgument<A1, ? extends CommonCommandContext<?, ?>, ?> argument1,
+                                       CommonArgument<A2, ? extends CommonCommandContext<?, ?>, ?> argument2,
                                        TriArgumentMapper<A1, A2, T> mapper) {
         this(b -> {
             b.argument(argument1);
@@ -53,9 +54,9 @@ public class ArgumentDefinition<T> implements ArgumentApplier, ArgumentMapper<T>
         });
     }
 
-    public <A1, A2, A3> ArgumentDefinition(CommonArgument<A1, CommandContext, ?> argument1,
-                                           CommonArgument<A2, CommandContext, ?> argument2,
-                                           CommonArgument<A3, CommandContext, ?> argument3,
+    public <A1, A2, A3> ArgumentDefinition(CommonArgument<A1, ? extends CommonCommandContext<?, ?>, ?> argument1,
+                                           CommonArgument<A2, ? extends CommonCommandContext<?, ?>, ?> argument2,
+                                           CommonArgument<A3, ? extends CommonCommandContext<?, ?>, ?> argument3,
                                            QuadArgumentMapper<A1, A2, A3, T> mapper) {
         this(b -> {
             b.argument(argument1);
@@ -69,10 +70,10 @@ public class ArgumentDefinition<T> implements ArgumentApplier, ArgumentMapper<T>
         });
     }
 
-    public <A1, A2, A3, A4> ArgumentDefinition(CommonArgument<A1, CommandContext, ?> argument1,
-                                               CommonArgument<A2, CommandContext, ?> argument2,
-                                               CommonArgument<A3, CommandContext, ?> argument3,
-                                               CommonArgument<A4, CommandContext, ?> argument4,
+    public <A1, A2, A3, A4> ArgumentDefinition(CommonArgument<A1, ? extends CommonCommandContext<?, ?>, ?> argument1,
+                                               CommonArgument<A2, ? extends CommonCommandContext<?, ?>, ?> argument2,
+                                               CommonArgument<A3, ? extends CommonCommandContext<?, ?>, ?> argument3,
+                                               CommonArgument<A4, ? extends CommonCommandContext<?, ?>, ?> argument4,
                                                QuintArgumentMapper<A1, A2, A3, A4, T> mapper) {
         this(b -> {
             b.argument(argument1);
@@ -88,11 +89,11 @@ public class ArgumentDefinition<T> implements ArgumentApplier, ArgumentMapper<T>
         });
     }
 
-    public <A1, A2, A3, A4, A5> ArgumentDefinition(CommonArgument<A1, CommandContext, ?> argument1,
-                                                   CommonArgument<A2, CommandContext, ?> argument2,
-                                                   CommonArgument<A3, CommandContext, ?> argument3,
-                                                   CommonArgument<A4, CommandContext, ?> argument4,
-                                                   CommonArgument<A5, CommandContext, ?> argument5,
+    public <A1, A2, A3, A4, A5> ArgumentDefinition(CommonArgument<A1, ? extends CommonCommandContext<?, ?>, ?> argument1,
+                                                   CommonArgument<A2, ? extends CommonCommandContext<?, ?>, ?> argument2,
+                                                   CommonArgument<A3, ? extends CommonCommandContext<?, ?>, ?> argument3,
+                                                   CommonArgument<A4, ? extends CommonCommandContext<?, ?>, ?> argument4,
+                                                   CommonArgument<A5, ? extends CommonCommandContext<?, ?>, ?> argument5,
                                                    SextArgumentMapper<A1, A2, A3, A4, A5, T> mapper) {
         this(b -> {
             b.argument(argument1);
@@ -110,12 +111,12 @@ public class ArgumentDefinition<T> implements ArgumentApplier, ArgumentMapper<T>
         });
     }
 
-    public <A1, A2, A3, A4, A5, A6> ArgumentDefinition(CommonArgument<A1, CommandContext, ?> argument1,
-                                                       CommonArgument<A2, CommandContext, ?> argument2,
-                                                       CommonArgument<A3, CommandContext, ?> argument3,
-                                                       CommonArgument<A4, CommandContext, ?> argument4,
-                                                       CommonArgument<A5, CommandContext, ?> argument5,
-                                                       CommonArgument<A6, CommandContext, ?> argument6,
+    public <A1, A2, A3, A4, A5, A6> ArgumentDefinition(CommonArgument<A1, ? extends CommonCommandContext<?, ?>, ?> argument1,
+                                                       CommonArgument<A2, ? extends CommonCommandContext<?, ?>, ?> argument2,
+                                                       CommonArgument<A3, ? extends CommonCommandContext<?, ?>, ?> argument3,
+                                                       CommonArgument<A4, ? extends CommonCommandContext<?, ?>, ?> argument4,
+                                                       CommonArgument<A5, ? extends CommonCommandContext<?, ?>, ?> argument5,
+                                                       CommonArgument<A6, ? extends CommonCommandContext<?, ?>, ?> argument6,
                                                        SeptArgumentMapper<A1, A2, A3, A4, A5, A6, T> mapper) {
         this(b -> {
             b.argument(argument1);
@@ -139,7 +140,7 @@ public class ArgumentDefinition<T> implements ArgumentApplier, ArgumentMapper<T>
         argumentApplier.applyArgument(builder);
     }
 
-    public T mapArgument(CommandContext ctx) throws ArgumentValidationException {
+    public T mapArgument(CommonCommandContext<?, ?> ctx) throws ArgumentValidationException {
         return mapper.mapArgument(ctx);
     }
 }

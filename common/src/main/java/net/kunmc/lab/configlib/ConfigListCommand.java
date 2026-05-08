@@ -1,7 +1,7 @@
 package net.kunmc.lab.configlib;
 
-import net.kunmc.lab.commandlib.Command;
-import net.kunmc.lab.commandlib.CommandContext;
+import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import net.kunmc.lab.commandlib.util.ChatColorUtil;
 import net.kunmc.lab.configlib.schema.ConfigSchemaEntry;
 import net.kunmc.lab.configlib.schema.DisplayContext;
@@ -10,34 +10,36 @@ import net.kunmc.lab.configlib.util.ConfigUtil;
 import java.util.Objects;
 import java.util.Set;
 
-class ConfigListCommand extends Command {
-    public ConfigListCommand(Set<CommonBaseConfig> configs,
-                             ConfigCommandDescriptions.Provider descriptions,
-                             MaskedRevealPolicy maskedRevealPolicy) {
-        super(SubCommandType.List.name);
-        description(ConfigCommandDescriptions.list(descriptions));
+final class ConfigListCommand {
+    static <C extends CommonCommandContext<?, ?>, T extends CommonCommand<C, T>> T create(CommandFactory<C, T> commandFactory,
+                                                                                          Set<CommonBaseConfig> configs,
+                                                                                          ConfigCommandDescriptions.Provider descriptions,
+                                                                                          MaskedRevealPolicy maskedRevealPolicy) {
+        T command = commandFactory.create(SubCommandType.List.name);
+        command.description(ConfigCommandDescriptions.list(descriptions));
 
         if (configs.isEmpty()) {
             throw new IllegalArgumentException("configs is empty");
         }
 
-        execute(ctx -> configs.forEach(config -> {
+        command.execute(ctx -> configs.forEach(config -> {
             listFields(ctx, config, maskedRevealPolicy);
         }));
 
         if (configs.size() > 1) {
             configs.forEach(config -> {
-                addChildren(new Command(config.entryName()) {{
-                    description(ConfigCommandDescriptions.config(descriptions, config.entryName()));
-                    execute(ctx -> {
-                        listFields(ctx, config, maskedRevealPolicy);
-                    });
-                }});
+                T child = commandFactory.create(config.entryName());
+                child.description(ConfigCommandDescriptions.config(descriptions, config.entryName()));
+                child.execute(ctx -> listFields(ctx, config, maskedRevealPolicy));
+                command.addChildren(child);
             });
         }
+        return command;
     }
 
-    static void listFields(CommandContext ctx, CommonBaseConfig config, MaskedRevealPolicy maskedRevealPolicy) {
+    static void listFields(CommonCommandContext<?, ?> ctx,
+                           CommonBaseConfig config,
+                           MaskedRevealPolicy maskedRevealPolicy) {
         config.inspect(() -> {
             ctx.sendMessage(ConfigUtil.configHeader(config));
             for (ConfigSchemaEntry<?> entry : config.schema()

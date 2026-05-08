@@ -99,44 +99,45 @@ final class PojoCommandValue extends SingleValue<Object, PojoCommandValue> {
     }
 
     private static List<ArgumentDefinition<?>> stringArguments(Field field) {
-        return List.of(new ArgumentDefinition<>(new StringArgument(field.getName(), StringArgument.Type.PHRASE)));
+        return List.of(new ArgumentDefinition<>(new CommonStringArgument(field.getName(),
+                                                                         CommonStringArgument.Type.PHRASE)));
     }
 
     private static List<ArgumentDefinition<?>> booleanArguments(Field field) {
-        return List.of(new ArgumentDefinition<>(new BooleanArgument(field.getName())));
+        return List.of(new ArgumentDefinition<>(new CommonBooleanArgument(field.getName())));
     }
 
     private static List<ArgumentDefinition<?>> integerArguments(Field field) {
         Range range = field.getAnnotation(Range.class);
         int min = range == null ? Integer.MIN_VALUE : (int) Math.ceil(range.min());
         int max = range == null ? Integer.MAX_VALUE : (int) Math.floor(range.max());
-        return List.of(new ArgumentDefinition<>(new IntegerArgument(field.getName(), min, max)));
+        return List.of(new ArgumentDefinition<>(new CommonIntegerArgument(field.getName(), min, max)));
     }
 
     private static List<ArgumentDefinition<?>> floatArguments(Field field) {
         Range range = field.getAnnotation(Range.class);
         float min = range == null ? -Float.MAX_VALUE : (float) range.min();
         float max = range == null ? Float.MAX_VALUE : (float) range.max();
-        return List.of(new ArgumentDefinition<>(new FloatArgument(field.getName(), min, max)));
+        return List.of(new ArgumentDefinition<>(new CommonFloatArgument(field.getName(), min, max)));
     }
 
     private static List<ArgumentDefinition<?>> doubleArguments(Field field) {
         Range range = field.getAnnotation(Range.class);
         double min = range == null ? -Double.MAX_VALUE : range.min();
         double max = range == null ? Double.MAX_VALUE : range.max();
-        return List.of(new ArgumentDefinition<>(new DoubleArgument(field.getName(), min, max)));
+        return List.of(new ArgumentDefinition<>(new CommonDoubleArgument(field.getName(), min, max)));
     }
 
     private static List<ArgumentDefinition<?>> longArguments(Field field) {
         Range range = field.getAnnotation(Range.class);
         long min = range == null ? Long.MIN_VALUE : (long) Math.ceil(range.min());
         long max = range == null ? Long.MAX_VALUE : (long) Math.floor(range.max());
-        return List.of(new ArgumentDefinition<>(new LongArgument(field.getName(), min, max)));
+        return List.of(new ArgumentDefinition<>(new CommonLongArgument<>(field.getName(), min, max)));
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static List<ArgumentDefinition<?>> enumArguments(Field field) {
-        return List.of(new ArgumentDefinition<>(new EnumArgument(field.getName(), wrap(field.getType()))));
+        return List.of(new ArgumentDefinition<>(new CommonEnumArgument(field.getName(), wrap(field.getType()))));
     }
 
     private static final class ArgumentRule {

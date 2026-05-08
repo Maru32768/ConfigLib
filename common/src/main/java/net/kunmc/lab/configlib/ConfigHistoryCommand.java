@@ -1,8 +1,8 @@
 package net.kunmc.lab.configlib;
 
-import net.kunmc.lab.commandlib.Command;
-import net.kunmc.lab.commandlib.CommandContext;
-import net.kunmc.lab.commandlib.argument.IntegerArgument;
+import net.kunmc.lab.commandlib.CommonCommand;
+import net.kunmc.lab.commandlib.CommonCommandContext;
+import net.kunmc.lab.commandlib.argument.CommonIntegerArgument;
 import net.kunmc.lab.commandlib.util.ChatColorUtil;
 import net.kunmc.lab.configlib.schema.ConfigSchemaEntry;
 import net.kunmc.lab.configlib.schema.DisplayContext;
@@ -17,14 +17,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-class ConfigHistoryCommand extends Command {
+final class ConfigHistoryCommand {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    public ConfigHistoryCommand(@NotNull Set<CommonBaseConfig> configs,
-                                ConfigCommandDescriptions.Provider descriptions,
-                                MaskedRevealPolicy maskedRevealPolicy) {
-        super(SubCommandType.History.name);
-        description(ConfigCommandDescriptions.history(descriptions));
+    static <C extends CommonCommandContext<?, ?>, T extends CommonCommand<C, T>> T create(CommandFactory<C, T> commandFactory,
+                                                                                          @NotNull Set<CommonBaseConfig> configs,
+                                                                                          ConfigCommandDescriptions.Provider descriptions,
+                                                                                          MaskedRevealPolicy maskedRevealPolicy) {
+        T command = commandFactory.create(SubCommandType.History.name);
+        command.description(ConfigCommandDescriptions.history(descriptions));
 
         if (configs.isEmpty()) {
             throw new IllegalArgumentException("configs is empty");
@@ -37,75 +38,17 @@ class ConfigHistoryCommand extends Command {
             // /config history <name> diff <index>  - diff current vs history[index]
             // /config history <name> undo          - restore history[1]
             // /config history <name> undo <index>  - restore history[index]
-            argument(new IntegerArgument("index",
-                                         0,
-                                         Integer.MAX_VALUE)).description(ConfigCommandDescriptions.historyIndex(
-                                                                    descriptions))
-                                                            .execute((index, ctx) -> {
-                                                                configs.forEach(config -> execDetail(ctx,
-                                                                                                     config,
-                                                                                                     index,
-                                                                                                     descriptions,
-                                                                                                     maskedRevealPolicy));
-                                                            });
-            configs.forEach(config -> addChildren(new Command(config.entryName()) {{
-                description(ConfigCommandDescriptions.historyConfig(descriptions, config.entryName()));
-                execute(ctx -> execList(ctx, config, descriptions, maskedRevealPolicy));
-                argument(new IntegerArgument("index",
-                                             0,
-                                             Integer.MAX_VALUE)).description(ConfigCommandDescriptions.historyIndex(
-                                                                        descriptions))
-                                                                .execute((index, ctx) -> {
-                                                                    execDetail(ctx,
-                                                                               config,
-                                                                               index,
-                                                                               descriptions,
-                                                                               maskedRevealPolicy);
-                                                                });
-                addChildren(new Command("diff") {{
-                    description(ConfigCommandDescriptions.historyDiff(descriptions));
-                    argument(new IntegerArgument("index",
-                                                 1,
-                                                 Integer.MAX_VALUE)).description(ConfigCommandDescriptions.diffIndex(
-                                                                            descriptions))
-                                                                    .execute((index, ctx) -> {
-                                                                        ConfigDiffCommand.execDiff(ctx,
-                                                                                                   config,
-                                                                                                   0,
-                                                                                                   index,
-                                                                                                   descriptions,
-                                                                                                   maskedRevealPolicy);
-                                                                    });
-                    argument(new IntegerArgument("index1", 0, Integer.MAX_VALUE),
-                             new IntegerArgument("index2",
-                                                 0,
-                                                 Integer.MAX_VALUE)).description(ConfigCommandDescriptions.diffIndexPair(
-                                                                            descriptions))
-                                                                    .execute((index1, index2, ctx) -> {
-                                                                        ConfigDiffCommand.execDiff(ctx,
-                                                                                                   config,
-                                                                                                   index1,
-                                                                                                   index2,
-                                                                                                   descriptions,
-                                                                                                   maskedRevealPolicy);
-                                                                    });
-                }});
-                addChildren(new Command("undo") {{
-                    description(ConfigCommandDescriptions.undoConfig(descriptions, config.entryName()));
-                    execute(ctx -> ConfigUndoCommand.exec(ctx, config, 1, descriptions, maskedRevealPolicy));
-                    argument(new IntegerArgument("index",
-                                                 1,
-                                                 Integer.MAX_VALUE)).description(ConfigCommandDescriptions.undoIndex(
-                                                                            descriptions))
-                                                                    .execute((index, ctx) -> {
-                                                                        ConfigUndoCommand.exec(ctx,
-                                                                                               config,
-                                                                                               index,
-                                                                                               descriptions,
-                                                                                               maskedRevealPolicy);
-                                                                    });
-                }});
-            }}));
+            command.argument(new CommonIntegerArgument<>("index", 0, Integer.MAX_VALUE))
+                   .description(ConfigCommandDescriptions.historyIndex(descriptions))
+                   .execute((index, ctx) -> configs.forEach(config -> execDetail(ctx,
+                                                                                 config,
+                                                                                 index,
+                                                                                 descriptions,
+                                                                                 maskedRevealPolicy)));
+            configs.forEach(config -> command.addChildren(createConfigHistoryChild(commandFactory,
+                                                                                   config,
+                                                                                   descriptions,
+                                                                                   maskedRevealPolicy)));
         } else {
             // /config history              - list all entries
             // /config history <index>      - show detail
@@ -114,65 +57,83 @@ class ConfigHistoryCommand extends Command {
             // /config history undo <index> - restore history[index]
             CommonBaseConfig config = configs.iterator()
                                              .next();
-            execute(ctx -> execList(ctx, config, descriptions, maskedRevealPolicy));
-            argument(new IntegerArgument("index",
-                                         0,
-                                         Integer.MAX_VALUE)).description(ConfigCommandDescriptions.historyIndex(
-                                                                    descriptions))
-                                                            .execute((index, ctx) -> {
-                                                                execDetail(ctx,
-                                                                           config,
-                                                                           index,
-                                                                           descriptions,
-                                                                           maskedRevealPolicy);
-                                                            });
-            addChildren(new Command("diff") {{
-                description(ConfigCommandDescriptions.historyDiff(descriptions));
-                argument(new IntegerArgument("index",
-                                             1,
-                                             Integer.MAX_VALUE)).description(ConfigCommandDescriptions.diffIndex(
-                                                                        descriptions))
-                                                                .execute((index, ctx) -> {
-                                                                    ConfigDiffCommand.execDiff(ctx,
-                                                                                               config,
-                                                                                               0,
-                                                                                               index,
-                                                                                               descriptions,
-                                                                                               maskedRevealPolicy);
-                                                                });
-                argument(new IntegerArgument("index1", 0, Integer.MAX_VALUE),
-                         new IntegerArgument("index2",
-                                             0,
-                                             Integer.MAX_VALUE)).description(ConfigCommandDescriptions.diffIndexPair(
-                                                                        descriptions))
-                                                                .execute((index1, index2, ctx) -> {
-                                                                    ConfigDiffCommand.execDiff(ctx,
-                                                                                               config,
-                                                                                               index1,
-                                                                                               index2,
-                                                                                               descriptions,
-                                                                                               maskedRevealPolicy);
-                                                                });
-            }});
-            addChildren(new Command("undo") {{
-                description(ConfigCommandDescriptions.undo(descriptions));
-                execute(ctx -> ConfigUndoCommand.exec(ctx, config, 1, descriptions, maskedRevealPolicy));
-                argument(new IntegerArgument("index",
-                                             1,
-                                             Integer.MAX_VALUE)).description(ConfigCommandDescriptions.undoIndex(
-                                                                        descriptions))
-                                                                .execute((index, ctx) -> {
-                                                                    ConfigUndoCommand.exec(ctx,
-                                                                                           config,
-                                                                                           index,
-                                                                                           descriptions,
-                                                                                           maskedRevealPolicy);
-                                                                });
-            }});
+            command.execute(ctx -> execList(ctx, config, descriptions, maskedRevealPolicy));
+            command.argument(new CommonIntegerArgument<>("index", 0, Integer.MAX_VALUE))
+                   .description(ConfigCommandDescriptions.historyIndex(descriptions))
+                   .execute((index, ctx) -> execDetail(ctx, config, index, descriptions, maskedRevealPolicy));
+            command.addChildren(createDiffChild(commandFactory, config, descriptions, maskedRevealPolicy));
+            command.addChildren(createUndoChild(commandFactory,
+                                                ConfigCommandDescriptions.undo(descriptions),
+                                                config,
+                                                descriptions,
+                                                maskedRevealPolicy));
         }
+        return command;
     }
 
-    private static void execList(CommandContext ctx,
+    private static <C extends CommonCommandContext<?, ?>, T extends CommonCommand<C, T>> T createConfigHistoryChild(
+            CommandFactory<C, T> commandFactory,
+            CommonBaseConfig config,
+            ConfigCommandDescriptions.Provider descriptions,
+            MaskedRevealPolicy maskedRevealPolicy) {
+        T child = commandFactory.create(config.entryName());
+        child.description(ConfigCommandDescriptions.historyConfig(descriptions, config.entryName()));
+        child.execute(ctx -> execList(ctx, config, descriptions, maskedRevealPolicy));
+        child.argument(new CommonIntegerArgument<>("index", 0, Integer.MAX_VALUE))
+             .description(ConfigCommandDescriptions.historyIndex(descriptions))
+             .execute((index, ctx) -> execDetail(ctx, config, index, descriptions, maskedRevealPolicy));
+        child.addChildren(createDiffChild(commandFactory, config, descriptions, maskedRevealPolicy));
+        child.addChildren(createUndoChild(commandFactory,
+                                          ConfigCommandDescriptions.undoConfig(descriptions, config.entryName()),
+                                          config,
+                                          descriptions,
+                                          maskedRevealPolicy));
+        return child;
+    }
+
+    private static <C extends CommonCommandContext<?, ?>, T extends CommonCommand<C, T>> T createDiffChild(
+            CommandFactory<C, T> commandFactory,
+            CommonBaseConfig config,
+            ConfigCommandDescriptions.Provider descriptions,
+            MaskedRevealPolicy maskedRevealPolicy) {
+        T child = commandFactory.create("diff");
+        child.description(ConfigCommandDescriptions.historyDiff(descriptions));
+        child.argument(new CommonIntegerArgument<>("index", 1, Integer.MAX_VALUE))
+             .description(ConfigCommandDescriptions.diffIndex(descriptions))
+             .execute((index, ctx) -> ConfigDiffCommand.execDiff(ctx,
+                                                                 config,
+                                                                 0,
+                                                                 index,
+                                                                 descriptions,
+                                                                 maskedRevealPolicy));
+        child.argument(new CommonIntegerArgument<>("index1", 0, Integer.MAX_VALUE),
+                       new CommonIntegerArgument<>("index2", 0, Integer.MAX_VALUE))
+             .description(ConfigCommandDescriptions.diffIndexPair(descriptions))
+             .execute((index1, index2, ctx) -> ConfigDiffCommand.execDiff(ctx,
+                                                                          config,
+                                                                          index1,
+                                                                          index2,
+                                                                          descriptions,
+                                                                          maskedRevealPolicy));
+        return child;
+    }
+
+    private static <C extends CommonCommandContext<?, ?>, T extends CommonCommand<C, T>> T createUndoChild(
+            CommandFactory<C, T> commandFactory,
+            java.util.function.Function<CommonCommandContext<?, ?>, String> description,
+            CommonBaseConfig config,
+            ConfigCommandDescriptions.Provider descriptions,
+            MaskedRevealPolicy maskedRevealPolicy) {
+        T child = commandFactory.create("undo");
+        child.description(ctx -> description.apply(ctx));
+        child.execute(ctx -> ConfigUndoCommand.exec(ctx, config, 1, descriptions, maskedRevealPolicy));
+        child.argument(new CommonIntegerArgument<>("index", 1, Integer.MAX_VALUE))
+             .description(ConfigCommandDescriptions.undoIndex(descriptions))
+             .execute((index, ctx) -> ConfigUndoCommand.exec(ctx, config, index, descriptions, maskedRevealPolicy));
+        return child;
+    }
+
+    private static void execList(CommonCommandContext<?, ?> ctx,
                                  CommonBaseConfig config,
                                  ConfigCommandDescriptions.Provider descriptions,
                                  MaskedRevealPolicy maskedRevealPolicy) {
@@ -202,7 +163,7 @@ class ConfigHistoryCommand extends Command {
         });
     }
 
-    private static void execDetail(CommandContext ctx,
+    private static void execDetail(CommonCommandContext<?, ?> ctx,
                                    CommonBaseConfig config,
                                    int index,
                                    ConfigCommandDescriptions.Provider descriptions,
@@ -230,7 +191,7 @@ class ConfigHistoryCommand extends Command {
         });
     }
 
-    private static String buildFieldsText(CommandContext ctx,
+    private static String buildFieldsText(CommonCommandContext<?, ?> ctx,
                                           CommonBaseConfig liveConfig,
                                           CommonBaseConfig histConfig,
                                           MaskedRevealPolicy maskedRevealPolicy) {
@@ -262,7 +223,7 @@ class ConfigHistoryCommand extends Command {
     }
 
     private static String dateText(HistoryEntry entry,
-                                   CommandContext ctx,
+                                   CommonCommandContext<?, ?> ctx,
                                    ConfigCommandDescriptions.Provider descriptions) {
         if (entry.timestamp() > 0) {
             return DATE_FORMAT.format(new Date(entry.timestamp()));
@@ -270,7 +231,7 @@ class ConfigHistoryCommand extends Command {
         return descriptions.describe(ctx, ConfigCommandDescriptions.Key.HISTORY_UNKNOWN_TIMESTAMP);
     }
 
-    private static void listFields(CommandContext ctx,
+    private static void listFields(CommonCommandContext<?, ?> ctx,
                                    CommonBaseConfig liveConfig,
                                    CommonBaseConfig histConfig,
                                    MaskedRevealPolicy maskedRevealPolicy) {

@@ -50,12 +50,11 @@ public class ItemStackListValue extends ListValue<ItemStack, ItemStackListValue>
                                                                                                               .map(GSON::toJson)
                                                                                                               .anyMatch(
                                                                                                                       x::equals);
-                                                                                              }),
-                                                (item, ctx) -> {
-                                                    List<ItemStack> items = new ArrayList<>();
-                                                    items.add(GSON.fromJson(item, ItemStack.class));
-                                                    return items;
-                                                }));
+                                                                                              }), (item, ctx) -> {
+            List<ItemStack> items = new ArrayList<>();
+            items.add(GSON.fromJson(item, ItemStack.class));
+            return items;
+        }));
     }
 
     @Override
