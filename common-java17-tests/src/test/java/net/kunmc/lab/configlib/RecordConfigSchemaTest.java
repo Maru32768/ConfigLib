@@ -106,8 +106,7 @@ class RecordConfigSchemaTest {
     @Test
     void recordLeafFieldsAllowSetModifyCommands() {
         RecordConfig cfg = new RecordConfig();
-        cfg.init(new CommonBaseConfig.Option().modifyDetectionTimerPeriod(10_000)
-                                              .fileWatchTimerPeriod(10_000));
+        cfg.init(new CommonBaseConfig.Option().modifyDetectionTimerPeriod(10_000));
         cfg.close();
         FakeSender sender = FakeSender.console();
 
