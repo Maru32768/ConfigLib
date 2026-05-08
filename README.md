@@ -25,7 +25,8 @@ developers.
 5. **Automatic Configuration Saving**  
    Automatically saves updated configuration values to disk, preventing data loss and ensuring persistence.
 6. **Command Generation for Configuration Management**  
-   Seamlessly integrates with CommandLib to generate commands for managing configurations via the command line.
+   Seamlessly integrates with [CommandLib](https://github.com/Maru32768/CommandLib) to generate commands for managing
+   configurations via the command line.
 7. **Schema Migration**  
    Built-in versioned migration system allows safe evolution of configuration structure across releases — handling field
    renames, type changes, and validation constraint changes without breaking existing user data.
