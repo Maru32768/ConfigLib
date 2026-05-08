@@ -29,6 +29,13 @@ subprojects {
         options.encoding = "UTF-8"
     }
 
+    tasks.withType<Test>().configureEach {
+        maxParallelForks = providers.gradleProperty("configlib.test.maxParallelForks")
+            .map(String::toInt)
+            .orElse((Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1))
+            .get()
+    }
+
     if (project.name in publishedProjects) {
         apply(plugin = "maven-publish")
 
