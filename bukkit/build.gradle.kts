@@ -14,8 +14,8 @@ repositories {
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
-    compileOnly("org.jetbrains:annotations:20.1.0")
+    compileOnlyApi("org.jetbrains:annotations:20.1.0")
     api(project(":common"))
-    compileOnly("com.github.Maru32768.CommandLib:spigot:$commandLibVersion")
+    api("com.github.Maru32768.CommandLib:spigot:$commandLibVersion")
     compileOnly("com.mojang:brigadier:1.0.18")
 }

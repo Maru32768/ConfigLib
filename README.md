@@ -41,8 +41,7 @@ developers.
 
 To ensure stability, we recommend replacing `latest.release` with a specific version such as `0.16.0`.  
 You can find the latest version on
-the [CommandLib Release Page](https://github.com/Maru32768/CommandLib/releases)
-and [ConfigLib Release Page](https://github.com/Maru32768/ConfigLib/releases).
+the [ConfigLib Release Page](https://github.com/Maru32768/ConfigLib/releases).
 
 ConfigLib also provides an optional annotation processor for compile-time checks of POJO annotations:
 
@@ -67,7 +66,6 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.Maru32768.CommandLib:bukkit:latest.release"
     implementation 'com.github.Maru32768.ConfigLib:bukkit:latest.release'
 }
 
@@ -96,7 +94,6 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.Maru32768.CommandLib:bukkit:latest.release")
     implementation("com.github.Maru32768.ConfigLib:bukkit:latest.release")
 }
 
@@ -125,7 +122,6 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.Maru32768.CommandLib:forge:latest.release"
     implementation "com.github.Maru32768.ConfigLib:forge:latest.release"
 }
 
@@ -165,7 +161,6 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.Maru32768.CommandLib:forge:latest.release")
     implementation("com.github.Maru32768.ConfigLib:forge:latest.release")
 }
 

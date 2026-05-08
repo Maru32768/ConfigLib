@@ -15,8 +15,8 @@ repositories {
 dependencies {
     api("com.google.code.gson:gson:2.10")
     implementation("org.snakeyaml:snakeyaml-engine:2.9")
-    compileOnly("org.jetbrains:annotations:20.1.0")
-    compileOnly("com.github.Maru32768.CommandLib:common:$commandLibVersion")
+    compileOnlyApi("org.jetbrains:annotations:20.1.0")
+    api("com.github.Maru32768.CommandLib:common:$commandLibVersion")
     testImplementation("com.github.Maru32768.CommandLib:common-testing:${commandLibVersion}")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     testImplementation("org.assertj:assertj-core:3.25.1")
