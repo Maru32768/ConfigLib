@@ -1,7 +1,7 @@
 package net.kunmc.lab.configlib;
 
-import net.kunmc.lab.commandlib.AbstractCommandContext;
 import net.kunmc.lab.commandlib.CommandContext;
+import net.kunmc.lab.commandlib.CommonCommandContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -241,11 +241,11 @@ public final class ConfigCommandDescriptions {
         return Collections.unmodifiableMap(descriptions);
     }
 
-    public static String describe(@NotNull AbstractCommandContext<?, ?> ctx, @NotNull Key key, Object... args) {
+    public static String describe(@NotNull CommonCommandContext<?, ?> ctx, @NotNull Key key, Object... args) {
         return DEFAULT_PROVIDER.describe(ctx, key, args);
     }
 
-    public static String describe(@NotNull AbstractCommandContext<?, ?> ctx, @NotNull Key key, Args args) {
+    public static String describe(@NotNull CommonCommandContext<?, ?> ctx, @NotNull Key key, Args args) {
         return DEFAULT_PROVIDER.describe(ctx, key, args);
     }
 
@@ -525,9 +525,9 @@ public final class ConfigCommandDescriptions {
         /**
          * Returns the command text for the given key and named arguments.
          */
-        String describe(@NotNull AbstractCommandContext<?, ?> ctx, @NotNull Key key, @NotNull Args args);
+        String describe(@NotNull CommonCommandContext<?, ?> ctx, @NotNull Key key, @NotNull Args args);
 
-        default String describe(@NotNull AbstractCommandContext<?, ?> ctx, @NotNull Key key, Object... args) {
+        default String describe(@NotNull CommonCommandContext<?, ?> ctx, @NotNull Key key, Object... args) {
             return describe(ctx, key, argsFor(key, args));
         }
     }
