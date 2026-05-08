@@ -7,18 +7,17 @@ import net.kunmc.lab.configlib.ArgumentDefinition;
 import net.kunmc.lab.configlib.SingleValue;
 import net.kunmc.lab.configlib.util.function.ArgumentApplier;
 import net.kunmc.lab.configlib.util.function.ArgumentMapper;
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-public abstract class PairValue<L, R, T extends PairValue<L, R, T>> extends SingleValue<MutablePair<L, R>, T> {
+public abstract class PairValue<L, R, T extends PairValue<L, R, T>> extends SingleValue<ConfigPair<L, R>, T> {
     public PairValue(L left, R right) {
-        this(MutablePair.of(left, right));
+        this(ConfigPair.of(left, right));
     }
 
-    private PairValue(MutablePair<L, R> value) {
+    private PairValue(ConfigPair<L, R> value) {
         super(value);
     }
 
@@ -39,15 +38,23 @@ public abstract class PairValue<L, R, T extends PairValue<L, R, T>> extends Sing
     }
 
     @Override
-    protected String valueToString(MutablePair<L, R> pair) {
+    protected ConfigPair<L, R> copyValue(ConfigPair<L, R> value) {
+        if (value == null) {
+            return null;
+        }
+        return ConfigPair.of(value.getLeft(), value.getRight());
+    }
+
+    @Override
+    protected String valueToString(ConfigPair<L, R> pair) {
         String leftName = "null";
-        if (getLeft() != null) {
-            leftName = leftToString(getLeft());
+        if (pair.getLeft() != null) {
+            leftName = leftToString(pair.getLeft());
         }
 
         String rightName = "null";
-        if (getRight() != null) {
-            rightName = rightToString(getRight());
+        if (pair.getRight() != null) {
+            rightName = rightToString(pair.getRight());
         }
 
         return String.format("(%s, %s)", leftName, rightName);
@@ -62,10 +69,10 @@ public abstract class PairValue<L, R, T extends PairValue<L, R, T>> extends Sing
      * The mapper may throw {@link net.kunmc.lab.commandlib.exception.ArgumentValidationException}
      * to send an error message to the command executor.
      */
-    public static class PairArgumentDefinition<L, R> implements ArgumentApplier, ArgumentMapper<MutablePair<L, R>> {
+    public static class PairArgumentDefinition<L, R> implements ArgumentApplier, ArgumentMapper<ConfigPair<L, R>> {
         private final ArgumentDefinition<L> left;
         private final ArgumentDefinition<R> right;
-        private Consumer<Pair<L, R>> validator = (p) -> {
+        private Consumer<ConfigPair<L, R>> validator = (p) -> {
         };
 
         public PairArgumentDefinition(ArgumentDefinition<L> left, ArgumentDefinition<R> right) {
@@ -73,8 +80,14 @@ public abstract class PairValue<L, R, T extends PairValue<L, R, T>> extends Sing
             this.right = right;
         }
 
-        public PairArgumentDefinition<L, R> validator(Consumer<Pair<L, R>> validator) {
+        public PairArgumentDefinition<L, R> validator(Consumer<ConfigPair<L, R>> validator) {
             this.validator = Objects.requireNonNull(validator);
+            return this;
+        }
+
+        public PairArgumentDefinition<L, R> validator(BiConsumer<L, R> validator) {
+            Objects.requireNonNull(validator);
+            this.validator = p -> validator.accept(p.getLeft(), p.getRight());
             return this;
         }
 
@@ -85,8 +98,8 @@ public abstract class PairValue<L, R, T extends PairValue<L, R, T>> extends Sing
         }
 
         @Override
-        public MutablePair<L, R> mapArgument(CommandContext ctx) throws ArgumentValidationException {
-            MutablePair<L, R> value = MutablePair.of(left.mapArgument(ctx), right.mapArgument(ctx));
+        public ConfigPair<L, R> mapArgument(CommandContext ctx) throws ArgumentValidationException {
+            ConfigPair<L, R> value = ConfigPair.of(left.mapArgument(ctx), right.mapArgument(ctx));
             validator.accept(value);
             return value;
         }

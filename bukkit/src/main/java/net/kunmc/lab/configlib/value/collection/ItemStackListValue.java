@@ -1,6 +1,5 @@
 package net.kunmc.lab.configlib.value.collection;
 
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.kunmc.lab.commandlib.argument.IntegerArgument;
@@ -52,8 +51,11 @@ public class ItemStackListValue extends ListValue<ItemStack, ItemStackListValue>
                                                                                                               .anyMatch(
                                                                                                                       x::equals);
                                                                                               }),
-                                                (item, ctx) -> Lists.newArrayList(GSON.fromJson(item,
-                                                                                                ItemStack.class))));
+                                                (item, ctx) -> {
+                                                    List<ItemStack> items = new ArrayList<>();
+                                                    items.add(GSON.fromJson(item, ItemStack.class));
+                                                    return items;
+                                                }));
     }
 
     @Override

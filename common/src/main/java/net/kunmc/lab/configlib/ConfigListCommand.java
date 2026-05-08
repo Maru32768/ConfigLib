@@ -6,8 +6,8 @@ import net.kunmc.lab.commandlib.util.ChatColorUtil;
 import net.kunmc.lab.configlib.schema.ConfigSchemaEntry;
 import net.kunmc.lab.configlib.schema.DisplayContext;
 import net.kunmc.lab.configlib.util.ConfigUtil;
-import org.apache.commons.lang3.StringUtils;
 
+import java.util.Objects;
 import java.util.Set;
 
 class ConfigListCommand extends Command {
@@ -46,8 +46,8 @@ class ConfigListCommand extends Command {
                                                                                                                 config,
                                                                                                                 maskedRevealPolicy)),
                                           option -> option.rgb(ChatColorUtil.GREEN.getRGB())
-                                                          .hoverText(StringUtils.defaultString(entry.metadata()
-                                                                                                    .description())));
+                                                          .hoverText(Objects.toString(entry.metadata()
+                                                                                           .description(), "")));
             }
         });
     }

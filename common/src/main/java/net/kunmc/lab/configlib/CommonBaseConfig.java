@@ -1,6 +1,5 @@
 package net.kunmc.lab.configlib;
 
-import com.google.common.base.Preconditions;
 import com.google.gson.annotations.SerializedName;
 import net.kunmc.lab.configlib.exception.ConfigValidationException;
 import net.kunmc.lab.configlib.migration.MigrationDsl;
@@ -510,7 +509,9 @@ public abstract class CommonBaseConfig {
         }
 
         public Option modifyDetectionTimerPeriod(int period) {
-            Preconditions.checkArgument(period > 0);
+            if (period <= 0) {
+                throw new IllegalArgumentException("modify detection timer period must be positive");
+            }
             this.modifyDetectionTimerPeriod = period;
             return this;
         }

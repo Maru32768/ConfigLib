@@ -10,7 +10,8 @@ import net.kunmc.lab.configlib.schema.DisplayContext;
 import net.kunmc.lab.configlib.store.ChangeTrace;
 import net.kunmc.lab.configlib.util.function.ArgumentApplier;
 import net.kunmc.lab.configlib.util.function.ArgumentMapper;
-import org.apache.commons.lang3.StringUtils;
+
+import java.util.Objects;
 
 class ConfigFieldCommand extends Command {
     ConfigFieldCommand(CommonBaseConfig config,
@@ -126,9 +127,9 @@ class ConfigFieldCommand extends Command {
             execute(ctx -> config.inspect(() -> ctx.sendMessageWithOption(schemaEntry.entryName() + ": " + schemaEntry.displayString(
                                                                                   DisplayContext.command(ctx, config, maskedRevealPolicy)),
                                                                           option -> option.rgb(ChatColorUtil.GREEN.getRGB())
-                                                                                          .hoverText(StringUtils.defaultString(
-                                                                                                  schemaEntry.metadata()
-                                                                                                             .description())))));
+                                                                                          .hoverText(Objects.toString(schemaEntry.metadata()
+                                                                                                                                  .description(),
+                                                                                                                       "")))));
         }
 
         if (modifyEnabled && v.isModifyEnabled()) {
@@ -176,9 +177,9 @@ class ConfigFieldCommand extends Command {
             execute(ctx -> config.inspect(() -> ctx.sendMessageWithOption(schemaEntry.entryName() + ": " + schemaEntry.displayString(
                                                                                   DisplayContext.command(ctx, config, maskedRevealPolicy)),
                                                                           option -> option.rgb(ChatColorUtil.GREEN.getRGB())
-                                                                                          .hoverText(StringUtils.defaultString(
-                                                                                                  schemaEntry.metadata()
-                                                                                                             .description())))));
+                                                                                          .hoverText(Objects.toString(schemaEntry.metadata()
+                                                                                                                                  .description(),
+                                                                                                                       "")))));
         }
 
         if (modifyEnabled) {
@@ -212,9 +213,9 @@ class ConfigFieldCommand extends Command {
             execute(ctx -> config.inspect(() -> ctx.sendMessageWithOption(schemaEntry.entryName() + ": " + schemaEntry.displayString(
                                                                                   DisplayContext.command(ctx, config, maskedRevealPolicy)),
                                                                           option -> option.rgb(ChatColorUtil.GREEN.getRGB())
-                                                                                          .hoverText(StringUtils.defaultString(
-                                                                                                  schemaEntry.metadata()
-                                                                                                             .description())))));
+                                                                                          .hoverText(Objects.toString(schemaEntry.metadata()
+                                                                                                                                  .description(),
+                                                                                                                       "")))));
         }
 
         if (modifyEnabled) {

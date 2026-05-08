@@ -7,7 +7,7 @@ import net.kunmc.lab.configlib.gson.*;
 import net.kunmc.lab.configlib.store.ConfigStore;
 import net.kunmc.lab.configlib.store.UnknownKeyPolicy;
 import net.kunmc.lab.configlib.store.YamlFileConfigStore;
-import org.apache.commons.lang3.tuple.Pair;
+import net.kunmc.lab.configlib.value.tuple.ConfigPair;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.data.BlockData;
@@ -106,7 +106,7 @@ public abstract class BaseConfig extends CommonBaseConfig implements Listener {
             GsonBuilder builder = new GsonBuilder().setPrettyPrinting()
                                                    .enableComplexMapKeySerialization()
                                                    .excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.STATIC)
-                                                   .registerTypeAdapter(Pair.class, new PairTypeAdapter<>())
+                                                   .registerTypeAdapter(ConfigPair.class, new PairTypeAdapter<>())
                                                    .registerTypeHierarchyAdapter(Team.class, new TeamTypeAdapter())
                                                    .registerTypeHierarchyAdapter(BlockData.class,
                                                                                  new BlockDataTypeAdapter())

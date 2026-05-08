@@ -8,6 +8,7 @@ import net.kunmc.lab.configlib.gson.*;
 import net.kunmc.lab.configlib.store.ConfigStore;
 import net.kunmc.lab.configlib.store.UnknownKeyPolicy;
 import net.kunmc.lab.configlib.store.YamlFileConfigStore;
+import net.kunmc.lab.configlib.value.tuple.ConfigPair;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.ScorePlayerTeam;
@@ -106,6 +107,7 @@ public abstract class BaseConfig extends CommonBaseConfig {
             GsonBuilder builder = new GsonBuilder().setPrettyPrinting()
                                                    .enableComplexMapKeySerialization()
                                                    .excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.STATIC)
+                                                   .registerTypeAdapter(ConfigPair.class, new PairTypeAdapter<>())
                                                    .registerTypeHierarchyAdapter(BlockPos.class,
                                                                                  new BlockPosTypeAdapter())
                                                    .registerTypeHierarchyAdapter(BlockState.class,
