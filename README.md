@@ -44,7 +44,8 @@ To ensure stability, we recommend replacing `latest.release` with a specific ver
 You can find the latest version on
 the [ConfigLib Release Page](https://github.com/Maru32768/ConfigLib/releases).
 
-ConfigLib also provides an optional annotation processor for compile-time checks of POJO annotations:
+ConfigLib also publishes an optional annotation processor artifact for compile-time checks of POJO annotations.
+Use it only on the `annotationProcessor` configuration; it is a lint layer, not a runtime dependency.
 
 ```kotlin
 dependencies {
@@ -52,7 +53,7 @@ dependencies {
 }
 ```
 
-The processor is a lint layer only. Runtime validation still runs without it.
+Runtime validation still runs without the processor.
 
 <details>
   <summary>Bukkit (Groovy DSL)</summary>

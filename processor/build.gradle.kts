@@ -2,6 +2,8 @@ plugins {
     java
 }
 
+description = "Optional ConfigLib annotation processor for POJO annotation lint checks."
+
 repositories {
     mavenCentral()
     maven {

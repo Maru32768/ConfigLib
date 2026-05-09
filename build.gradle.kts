@@ -13,6 +13,8 @@ subprojects {
     apply(plugin = "java-library")
     apply(plugin = "idea")
 
+    description = "ConfigLib ${project.name} module"
+
     configure<JavaPluginExtension> {
         toolchain.languageVersion.set(JavaLanguageVersion.of(11))
         withSourcesJar()
@@ -47,6 +49,9 @@ subprojects {
                     version = project.version.toString()
                     from(components["java"])
                     pom {
+                        name.set("ConfigLib ${project.name}")
+                        description.set(provider { project.description })
+                        url.set("https://github.com/Maru32768/ConfigLib")
                         licenses {
                             license {
                                 name.set("MIT License")
