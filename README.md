@@ -876,8 +876,9 @@ It loads the API into context and provides usage conventions tailored to library
 
 ## Sample Projects
 
-[Bukkit](./sample/bukkit/src/main/java/net/kunmc/lab/sampleplugin)  
-[Forge](./sample/forge/src/main/java/net/kunmc/lab/samplemod)
+[Overview](samples)  
+[Bukkit](samples/bukkit/src/main/java/net/kunmc/lab/sampleplugin)  
+[Forge](samples/forge/src/main/java/net/kunmc/lab/samplemod)
 
 ## License
 
