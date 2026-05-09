@@ -8,6 +8,20 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Base builder for generated ConfigLib command trees.
+ * <p>
+ * Platform modules expose concrete subclasses that supply the platform command
+ * factory. The fluent configuration API on this builder controls command group
+ * visibility, registered configs, the root command name, command descriptions,
+ * masked-value reveal rules, config ordering, and final command creation.
+ * </p>
+ * <p>
+ * The generated command tree includes config-level list/reload/reset/history,
+ * undo, diff, audit commands and per-field get/modify commands when those
+ * command groups are enabled and applicable to the supplied configs.
+ * </p>
+ */
 public class CommonConfigCommandBuilder<C extends CommonCommandContext<?, ?>, T extends CommonCommand<C, T>, B extends CommonConfigCommandBuilder<C, T, B>> {
     private final CommandFactory<C, T> commandFactory;
     private final List<CommonBaseConfig> configs = new ArrayList<>();
@@ -32,51 +46,86 @@ public class CommonConfigCommandBuilder<C extends CommonCommandContext<?, ?>, T 
         return (B) this;
     }
 
+    /**
+     * Removes the generated list command group from the root command tree.
+     */
     public B disableList() {
         listEnabled = false;
         return self();
     }
 
+    /**
+     * Removes the generated reload command group from the root command tree.
+     */
     public B disableReload() {
         reloadEnabled = false;
         return self();
     }
 
+    /**
+     * Removes the generated reset command group from the root command tree.
+     */
     public B disableReset() {
         resetEnabled = false;
         return self();
     }
 
+    /**
+     * Removes generated history, undo, diff, and audit command groups.
+     */
     public B disableHistory() {
         historyEnabled = false;
         return self();
     }
 
+    /**
+     * Removes generated per-field get commands.
+     */
     public B disableGet() {
         getEnabled = false;
         return self();
     }
 
+    /**
+     * Removes generated per-field modification commands.
+     */
     public B disableModify() {
         modifyEnabled = false;
         return self();
     }
 
+    /**
+     * Adds another config to the same generated command tree.
+     * <p>
+     * With multiple configs, commands can be addressed through config-qualified
+     * paths such as {@code <configName>.<fieldName>}.
+     * </p>
+     */
     public B addConfig(@NotNull CommonBaseConfig config) {
         configs.add(config);
         return self();
     }
 
+    /**
+     * Sets the generated root command name. The default is {@code config}.
+     */
     public B name(@NotNull String name) {
         this.name = Objects.requireNonNull(name);
         return self();
     }
 
+    /**
+     * Replaces command descriptions and user-facing command messages.
+     */
     public B descriptionProvider(@NotNull ConfigCommandDescriptions.Provider provider) {
         this.descriptionProvider = Objects.requireNonNull(provider);
         return self();
     }
 
+    /**
+     * Reveals {@code @Masked} values to console senders, operators, and senders
+     * with the supplied permission.
+     */
     public B maskedRevealPermission(@NotNull String permission) {
         Objects.requireNonNull(permission, "permission");
         return maskedRevealPolicy((ctx, config, entry) -> {
@@ -85,20 +134,34 @@ public class CommonConfigCommandBuilder<C extends CommonCommandContext<?, ?>, T 
         });
     }
 
+    /**
+     * Replaces the policy used to decide whether masked command output may show
+     * the real value.
+     */
     public B maskedRevealPolicy(@NotNull MaskedRevealPolicy policy) {
         this.maskedRevealPolicy = Objects.requireNonNull(policy);
         return self();
     }
 
+    /**
+     * Sorts configs by {@link CommonBaseConfig#entryName()} before building.
+     */
     public B sort() {
         return sort(Comparator.comparing(CommonBaseConfig::entryName));
     }
 
+    /**
+     * Sorts configs with a custom comparator before building.
+     */
     public B sort(Comparator<? super CommonBaseConfig> sorter) {
         configs.sort(sorter);
         return self();
     }
 
+    /**
+     * Builds the command tree. Builders are mutable; create a new builder when a
+     * different command tree configuration is needed.
+     */
     public T build() {
         T configCommand = commandFactory.create(name);
         configCommand.description(ConfigCommandDescriptions.root(descriptionProvider));

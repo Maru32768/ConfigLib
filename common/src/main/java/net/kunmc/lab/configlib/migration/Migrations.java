@@ -8,6 +8,15 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * Immutable set of versioned config migrations.
+ * <p>
+ * Application code normally registers migrations through
+ * {@link net.kunmc.lab.configlib.CommonBaseConfig.Option#migrateTo(int, Consumer)}.
+ * Custom stores and tests may use this type directly to preview or execute
+ * migration plans against raw JSON documents.
+ * </p>
+ */
 public final class Migrations {
     private final NavigableMap<Integer, MigrationPlan> migrations;
 

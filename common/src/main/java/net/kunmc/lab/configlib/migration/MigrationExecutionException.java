@@ -4,6 +4,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Failure raised while executing one migration operation.
+ * <p>
+ * The exception includes the migration version, failed operation, completed
+ * reports before the failure, and the failed operation report. ConfigLib does
+ * not persist a partially migrated document when this exception is thrown.
+ * </p>
+ */
 public final class MigrationExecutionException extends RuntimeException {
     private final int version;
     private final MigrationOperationType operationType;

@@ -12,6 +12,11 @@ import java.util.UUID;
 
 /**
  * Metadata that explains an accepted config change.
+ * <p>
+ * Change traces are part of ConfigLib's public history and audit API. Use the
+ * static factories for normal application code; the constructor is kept for
+ * integrations that need to restore traces from their own stores.
+ * </p>
  */
 public final class ChangeTrace {
     private final ChangeSource source;
@@ -29,34 +34,58 @@ public final class ChangeTrace {
         this.paths = paths == null ? List.of() : List.copyOf(paths);
     }
 
+    /**
+     * Trace used for the first snapshot of a newly created config.
+     */
     public static ChangeTrace initial() {
         return new ChangeTrace(ChangeSource.INITIAL, null, null, List.of());
     }
 
+    /**
+     * Trace used for an initial snapshot of a migrated config.
+     */
     public static ChangeTrace migration() {
         return new ChangeTrace(ChangeSource.MIGRATION, null, null, List.of());
     }
 
+    /**
+     * Trace used for accepted application code changes with vararg paths.
+     */
     public static ChangeTrace programmatic(String... paths) {
         return new ChangeTrace(ChangeSource.PROGRAMMATIC, null, null, Arrays.asList(paths));
     }
 
+    /**
+     * Trace used for accepted application code changes with an explicit path list.
+     */
     public static ChangeTrace programmatic(List<String> paths) {
         return new ChangeTrace(ChangeSource.PROGRAMMATIC, null, null, paths);
     }
 
+    /**
+     * Trace used for accepted changes loaded from the backing store.
+     */
     public static ChangeTrace file(List<String> paths) {
         return new ChangeTrace(ChangeSource.FILE, null, null, paths);
     }
 
+    /**
+     * Trace used for undo operations.
+     */
     public static ChangeTrace undo(String path) {
         return new ChangeTrace(ChangeSource.UNDO, null, null, List.of(path));
     }
 
+    /**
+     * Trace used for generated command changes with vararg paths.
+     */
     public static ChangeTrace command(CommonCommandContext<?, ?> ctx, String reason, String... paths) {
         return new ChangeTrace(ChangeSource.COMMAND, actor(ctx), reason, Arrays.asList(paths));
     }
 
+    /**
+     * Trace used for generated command changes with an explicit path list.
+     */
     public static ChangeTrace command(CommonCommandContext<?, ?> ctx, String reason, List<String> paths) {
         return new ChangeTrace(ChangeSource.COMMAND, actor(ctx), reason, paths);
     }

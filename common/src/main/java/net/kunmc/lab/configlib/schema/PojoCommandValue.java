@@ -14,9 +14,9 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 final class PojoCommandValue extends SingleValue<Object, PojoCommandValue> {
-    // v1.0 intentionally keeps POJO command mutation to a fixed scalar set.
-    // Custom parsing, completion, Minecraft-specific types, and operation commands
-    // should be modeled with explicit Value types instead of extending this table.
+    // Keep POJO command mutation to a fixed scalar set. Custom parsing,
+    // completion, Minecraft-specific types, and operation commands should be
+    // modeled with explicit Value types instead of extending this table.
     private static final Map<Class<?>, Class<?>> PRIMITIVE_TO_WRAPPER = Map.of(boolean.class,
                                                                                Boolean.class,
                                                                                byte.class,

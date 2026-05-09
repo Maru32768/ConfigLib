@@ -216,6 +216,18 @@ public abstract class CommonBaseConfig {
         mutate(mutation, ChangeTrace.programmatic());
     }
 
+    /**
+     * Runs a config mutation as one consistent change with explicit trace metadata.
+     * <p>
+     * Use this overload when application code wants history and audit entries to
+     * carry a reason, actor, or precomputed paths. If {@code trace} has no paths,
+     * ConfigLib fills them from the observed changed entries.
+     * </p>
+     *
+     * @param mutation code that updates this config
+     * @param trace    metadata recorded with the accepted change
+     * @throws ConfigValidationException if the mutated config does not satisfy schema validation
+     */
     public final void mutate(Runnable mutation, ChangeTrace trace) {
         withIoLock(() -> {
             Map<ConfigSchemaEntry<?>, Object> before = snapshotEntryValues();
@@ -283,10 +295,35 @@ public abstract class CommonBaseConfig {
         }
     }
 
+    /**
+     * Restores this config to the snapshot at {@code historyIndex} with a default
+     * undo trace.
+     * <p>
+     * History uses zero-based indexing where index {@code 0} is the current
+     * latest snapshot. Index {@code 0} cannot be restored through undo because it
+     * already represents the live state.
+     * </p>
+     *
+     * @param historyIndex history entry index to restore
+     * @return true when the index was restorable and the undo was applied
+     */
     public final boolean applyUndo(int historyIndex) {
         return applyUndo(historyIndex, ChangeTrace.undo("history[" + historyIndex + "]"));
     }
 
+    /**
+     * Restores this config to the snapshot at {@code historyIndex} and records
+     * the supplied undo trace when restoration succeeds.
+     * <p>
+     * History uses zero-based indexing where index {@code 0} is the current
+     * latest snapshot. Index {@code 0} cannot be restored through undo because it
+     * already represents the live state.
+     * </p>
+     *
+     * @param historyIndex history entry index to restore
+     * @param trace        audit/history metadata for the undo operation
+     * @return true when the index was restorable and the undo was applied
+     */
     public final boolean applyUndo(int historyIndex, ChangeTrace trace) {
         return withIoLock(() -> {
             if (!configStore.canRestoreHistoryIndex(historyIndex)) {
@@ -303,12 +340,24 @@ public abstract class CommonBaseConfig {
         });
     }
 
+    /**
+     * Returns persisted history snapshots for this config.
+     * <p>
+     * The returned list is ordered newest-first; index {@code 0} represents the
+     * current snapshot. Mutating a snapshot object returned from a history entry
+     * does not mutate the live config.
+     * </p>
+     */
     public final List<HistoryEntry> readHistory() {
         return withIoLock(() -> {
             return configStore.readHistory(getClass(), migrations);
         });
     }
 
+    /**
+     * Returns persisted audit entries for accepted config changes, ordered
+     * newest-first.
+     */
     public final List<AuditEntry> readAudit() {
         return withIoLock(configStore::readAudit);
     }

@@ -2,7 +2,15 @@ package net.kunmc.lab.configlib.store;
 
 import net.kunmc.lab.configlib.CommonBaseConfig;
 
-public class HistoryEntry {
+/**
+ * One persisted config history snapshot.
+ * <p>
+ * History entries are returned newest-first by {@link CommonBaseConfig#readHistory()}.
+ * Each entry contains the captured config object and the trace that explains why
+ * the snapshot was recorded.
+ * </p>
+ */
+public final class HistoryEntry {
     private final long timestamp;
     private final ChangeTrace trace;
     private final CommonBaseConfig config;

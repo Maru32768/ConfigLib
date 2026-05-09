@@ -11,9 +11,9 @@ import java.util.Objects;
 /**
  * One normalized config entry in a {@link ConfigSchema}.
  * <p>
- * This is the stable read-facing schema API for code that needs to inspect
- * ConfigLib entries without caring whether they are backed by the Value API or
- * the POJO API. Public consumers should rely on {@link #path()}, {@link #entryName()},
+ * This is the read-facing schema API for code that needs to inspect ConfigLib
+ * entries without caring whether they are backed by the Value API or the POJO
+ * API. Public consumers should rely on {@link #path()}, {@link #entryName()},
  * {@link #metadata()}, {@link #isMasked()}, {@link #validate(Object)}, {@link #get()},
  * {@link #displayString()}, and {@link #supportsModificationCommand()}.
  * </p>

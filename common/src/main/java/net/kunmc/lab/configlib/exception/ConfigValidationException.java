@@ -6,6 +6,15 @@ import net.kunmc.lab.configlib.schema.ConfigSchemaPath;
 
 import java.util.Objects;
 
+/**
+ * Runtime validation failure for one normalized config path.
+ * <p>
+ * ConfigLib throws this exception when file load, command mutation, undo, or
+ * accepted programmatic mutation would leave a config entry with an invalid
+ * value. The exception exposes the path, rejected value, and original
+ * {@link InvalidValueException} so callers can log or report the failure.
+ * </p>
+ */
 public final class ConfigValidationException extends RuntimeException {
     private final ConfigSchemaPath path;
     private final Object value;

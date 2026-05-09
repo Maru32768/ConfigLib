@@ -4,6 +4,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * One persisted audit event for an accepted config change.
+ * <p>
+ * Audit entries record the change trace and, when available, per-field before
+ * and after display text. They are returned newest-first by
+ * {@link net.kunmc.lab.configlib.CommonBaseConfig#readAudit()}.
+ * </p>
+ */
 public final class AuditEntry {
     private final long timestamp;
     private final ChangeTrace trace;

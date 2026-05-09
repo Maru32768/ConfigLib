@@ -114,8 +114,8 @@ public final class ConfigSchema {
 
     // Only expand classes explicitly designed as config POJOs (i.e. nested/inner classes).
     // Top-level custom/library types are treated as opaque leaf values. This keeps the
-    // v1.0 POJO API bounded: structured POJO sections are nested classes/records, while
-    // custom scalar parsing and Minecraft-specific command behavior belong in Value types.
+    // Keep the POJO API bounded: structured POJO sections are nested classes/records,
+    // while custom scalar parsing and Minecraft-specific command behavior belong in Value types.
     private static boolean isNestedPojoType(Class<?> type) {
         if (type.getEnclosingClass() == null) {
             return false;
