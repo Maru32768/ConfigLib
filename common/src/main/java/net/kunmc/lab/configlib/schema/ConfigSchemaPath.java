@@ -2,6 +2,13 @@ package net.kunmc.lab.configlib.schema;
 
 import java.util.Objects;
 
+/**
+ * Dotted path of a normalized config schema entry.
+ * <p>
+ * Top-level entries use their field name. Nested POJO entries use dot-separated
+ * field names such as {@code arena.maxPlayers}.
+ * </p>
+ */
 public final class ConfigSchemaPath {
     private final String path;
 

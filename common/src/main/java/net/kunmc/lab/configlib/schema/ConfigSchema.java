@@ -10,6 +10,19 @@ import net.kunmc.lab.configlib.util.ReflectionUtil;
 import java.lang.reflect.Field;
 import java.util.*;
 
+/**
+ * Normalized description of a ConfigLib config class.
+ * <p>
+ * A schema is the shared read model used by formats, validation, generated commands,
+ * history, diff, undo, and audit features. It intentionally hides whether an entry
+ * came from the Value API or the POJO API.
+ * </p>
+ * <p>
+ * Public consumers may inspect entries, look up entries by dotted path, and read
+ * metadata. Constructing schemas from arbitrary objects is an internal concern of
+ * ConfigLib and currently happens through {@link #fromConfig(CommonBaseConfig)}.
+ * </p>
+ */
 public final class ConfigSchema {
     private final List<ConfigSchemaEntry<?>> entries;
     private final Map<String, String> descriptionsByPath;
