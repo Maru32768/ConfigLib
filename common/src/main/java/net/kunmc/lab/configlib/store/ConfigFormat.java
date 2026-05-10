@@ -11,7 +11,14 @@ public interface ConfigFormat {
     JsonElement parse(String content);
 
     default JsonObject parseObject(String content) {
-        return parse(content).getAsJsonObject();
+        JsonElement element = parse(content);
+        if (element == null || element.isJsonNull()) {
+            return new JsonObject();
+        }
+        if (!element.isJsonObject()) {
+            throw new InvalidConfigFormatException("Config root must be an object.");
+        }
+        return element.getAsJsonObject();
     }
 
     default boolean wrapsHistory() {

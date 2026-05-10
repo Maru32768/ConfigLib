@@ -65,6 +65,27 @@ class YamlFileConfigStoreTest {
     }
 
     @Test
+    void readEmptyFileAsEmptyObjectAndKeepsDefaults() throws IOException {
+        writeFile("");
+
+        SimpleConfig loaded = (SimpleConfig) store.read(SimpleConfig.class, noMigrations(), new SimpleConfig(7));
+
+        assertEquals(7, loaded.value);
+    }
+
+    @Test
+    void readRejectsNonObjectRoot() throws IOException {
+        writeFile("- value: 1\n");
+
+        InvalidConfigFormatException ex = assertThrows(InvalidConfigFormatException.class,
+                                                       () -> store.read(SimpleConfig.class,
+                                                                        noMigrations(),
+                                                                        new SimpleConfig()));
+
+        assertEquals("Config root must be an object.", ex.getMessage());
+    }
+
+    @Test
     void readAppliesMigrationAndUpdatesYaml() throws IOException {
         writeFile("value: 3\n_version_: 0\n");
 
