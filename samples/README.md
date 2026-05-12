@@ -3,7 +3,8 @@
 This directory contains small, buildable sample projects for the supported
 platforms.
 
-- [Bukkit/Paper](./bukkit)
+- [Spigot](./spigot)
+- [Paper](./paper)
 - [Forge](./forge)
 
 When these samples are built from this repository, Gradle uses `includeBuild`
@@ -39,12 +40,17 @@ Each platform sample registers generated ConfigLib commands under `/test config`
 Build a sample from its platform directory:
 
 ```bash
-cd sample/bukkit
+cd samples/spigot
 ./gradlew build
 ```
 
 ```bash
-cd sample/forge
+cd samples/paper
+./gradlew build
+```
+
+```bash
+cd samples/forge
 ./gradlew build
 ```
 

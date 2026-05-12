@@ -1,6 +1,6 @@
 ﻿---
 description:
-  Generate, test, or explain code that uses the ConfigLib library in a Bukkit or Forge project. Usage: /configlib <request>
+  Generate, test, or explain code that uses the ConfigLib library in a Spigot, Paper, or Forge project. Usage: /configlib <request>
 allowed-tools: Bash Read Glob Grep
 ---
 
@@ -41,7 +41,8 @@ Read only what the request needs. Common public API files include:
 - `common/src/main/java/net/kunmc/lab/configlib/ConfigKeys.java`
 - `common/src/main/java/net/kunmc/lab/configlib/migration/MigrationDsl.java`
 - `common/src/main/java/net/kunmc/lab/configlib/migration/Migrations.java`
-- `bukkit/src/main/java/net/kunmc/lab/configlib/BaseConfig.java`
+- `spigot/src/main/java/net/kunmc/lab/configlib/BaseConfig.java`
+- `paper/src/main/java/net/kunmc/lab/configlib/BaseConfig.java`
 - `common/src/main/java/net/kunmc/lab/configlib/Value.java`
 - `common/src/main/java/net/kunmc/lab/configlib/SingleValue.java`
 - `common/src/main/java/net/kunmc/lab/configlib/CollectionValue.java`
@@ -55,7 +56,8 @@ Read only what the request needs. Common public API files include:
 - `common/src/main/java/net/kunmc/lab/configlib/store/AuditEntry.java`
 - `common/src/main/java/net/kunmc/lab/configlib/store/ChangeTrace.java`
 - `common/src/main/java/net/kunmc/lab/configlib/value/`
-- `bukkit/src/main/java/net/kunmc/lab/configlib/value/`
+- `spigot/src/main/java/net/kunmc/lab/configlib/value/`
+- `paper/src/main/java/net/kunmc/lab/configlib/value/`
 - `common/src/main/java/net/kunmc/lab/configlib/annotation/` (field annotations; prefer each annotation's Javadoc for
   exact applicability)
 

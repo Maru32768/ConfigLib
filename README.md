@@ -1,8 +1,8 @@
-# ConfigLib - A Type-Safe Configuration API for Bukkit and Forge
+# ConfigLib - A Type-Safe Configuration API for Spigot, Paper, and Forge
 
 [![](https://jitpack.io/v/Maru32768/ConfigLib.svg)](https://jitpack.io/#Maru32768/ConfigLib)
 
-ConfigLib is an advanced, type-safe Configuration API designed to simplify configuration management for Bukkit and Forge
+ConfigLib is an advanced, type-safe Configuration API designed to simplify configuration management for Spigot, Paper, and Forge
 developers.
 
 ## Features
@@ -17,7 +17,7 @@ developers.
     - **POJO API** — declare plain Java fields, nested immutable classes, and nested Java 16+ `record`s, then annotate
       with `@Description`, `@Range`, `@ConfigNullable`. Nested POJOs are expanded automatically.
 3. **YAML and JSON Storage**  
-   YAML is the default format for Bukkit and Forge. `description()` and `@Description` annotations are written as YAML
+   YAML is the default format for Spigot, Paper, and Forge. `description()` and `@Description` annotations are written as YAML
    comments. JSON is available by overriding `createConfigStore()`.
 4. **Automatic Configuration Reloading**  
    Monitors configuration files and reloads them automatically when changes are detected, ensuring your application
@@ -55,8 +55,11 @@ dependencies {
 
 Runtime validation still runs without the processor.
 
+Use the `spigot` artifact for Spigot-compatible plugins, or the `paper` artifact for Paper-only plugins that use
+CommandLib's Paper backend.
+
 <details>
-  <summary>Bukkit (Groovy DSL)</summary>
+  <summary>Spigot/Paper (Groovy DSL)</summary>
 
 ```groovy
 plugins {
@@ -68,7 +71,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.Maru32768.ConfigLib:bukkit:latest.release'
+    implementation 'com.github.Maru32768.ConfigLib:spigot:latest.release'
 }
 
 shadowJar {
@@ -84,7 +87,7 @@ tasks.build.dependsOn tasks.shadowJar
 </details>
 
 <details>
-  <summary>Bukkit (Kotlin DSL)</summary>
+  <summary>Spigot/Paper (Kotlin DSL)</summary>
 
 ```kotlin
 plugins {
@@ -96,7 +99,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.Maru32768.ConfigLib:bukkit:latest.release")
+    implementation("com.github.Maru32768.ConfigLib:spigot:latest.release")
 }
 
 tasks.named<ShadowJar>("shadowJar") {
@@ -877,7 +880,8 @@ It loads the API into context and provides usage conventions tailored to library
 ## Sample Projects
 
 [Overview](samples)  
-[Bukkit](samples/bukkit/src/main/java/net/kunmc/lab/sampleplugin)  
+[Spigot](samples/spigot/src/main/java/net/kunmc/lab/sampleplugin)  
+[Paper](samples/paper/src/main/java/net/kunmc/lab/sampleplugin)  
 [Forge](samples/forge/src/main/java/net/kunmc/lab/samplemod)
 
 ## License

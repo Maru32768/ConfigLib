@@ -95,7 +95,7 @@ class MyPlugin extends JavaPlugin {
 
 ## Testing with CommandTester
 
-Use `bukkit-test`'s `CommandTester` and `FakeSender` to test commands without a running server.
+Use `spigot-testing`'s or `paper-testing`'s `CommandTester` and `FakeSender` to test commands without a running server.
 
 ```java
 class MyCommandTest {

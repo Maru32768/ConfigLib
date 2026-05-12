@@ -1,12 +1,12 @@
 allprojects {
     // TODO: Revisit this local project group after the temporary local CommandLib composite build is removed.
-    // ConfigLib and CommandLib both have "common", "bukkit", and "forge" subprojects; keeping the same local
+    // ConfigLib and CommandLib both have "common", "spigot", "paper", and "forge" subprojects; keeping the same local
     // Gradle coordinates makes composite-build substitution redirect CommandLib internals back to ConfigLib.
     group = "net.kunmc.lab.configlib"
     version = "0.21.0"
 }
 
-val publishedProjects = setOf("common", "bukkit", "forge", "processor")
+val publishedProjects = setOf("common", "spigot", "paper", "forge", "processor")
 
 subprojects {
     apply(plugin = "java")

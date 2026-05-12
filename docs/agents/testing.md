@@ -6,7 +6,8 @@ Common checks:
 
 ```bash
 ./gradlew :common:test
-./gradlew :bukkit:test
+./gradlew :spigot:test
+./gradlew :paper:test
 ./gradlew :forge:test
 ```
 
@@ -14,7 +15,8 @@ Compile checks:
 
 ```bash
 ./gradlew :common:compileJava
-./gradlew :bukkit:compileJava
+./gradlew :spigot:compileJava
+./gradlew :paper:compileJava
 ./gradlew :forge:compileJava
 ```
 

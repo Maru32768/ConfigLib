@@ -18,12 +18,16 @@ auto-generated commands through CommandLib integration.
 - `common`: platform-agnostic core, including `CommonBaseConfig`, all generic
   `Value` types, command generation, Gson adapters, history, migrations, and
   utilities.
-- `bukkit`: Bukkit/Paper integration, platform `BaseConfig`, Bukkit-specific
-  values, and Bukkit Gson adapters.
+- `spigot`: Spigot integration, platform `BaseConfig`, Bukkit API values, and
+  Bukkit Gson adapters.
+- `paper`: Paper integration, platform `BaseConfig`, Bukkit/Paper API values,
+  and Bukkit Gson adapters.
 - `forge`: Forge integration, platform `BaseConfig`, Forge-specific values, and
   adapters.
-- `sample`: sample Bukkit and Forge usage.
-- `bukkit/test_plugin`: internal Bukkit test plugin.
+- `samples/spigot`: sample Spigot plugin usage.
+- `samples/paper`: sample Paper plugin usage.
+- `samples/forge`: sample Forge mod usage.
+- `spigot/test-plugin`: internal Spigot test plugin.
 
 All source lives under `net.kunmc.lab.configlib`.
 
